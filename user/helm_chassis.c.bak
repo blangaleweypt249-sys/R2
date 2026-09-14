@@ -171,7 +171,7 @@ void helm_chassis_ready(void)
     if (!target_initialized)
     {
         ready_target[0] = dji_motor[0].actual_angle + 15.0f;
-        ready_target[1] = dji_motor[1].actual_angle + 80.0f;
+        ready_target[1] = dji_motor[1].actual_angle - 80.0f;
         ready_target[2] = dji_motor[2].actual_angle;
         ready_target[3] = dji_motor[3].actual_angle + 90.0f;
         target_initialized = 1U;

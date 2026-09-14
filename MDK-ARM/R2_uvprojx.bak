@@ -638,6 +638,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>PART_CONTORL</GroupName>
+          <Files>
+            <File>
+              <FileName>helm_chassis.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\helm_chassis.c</FilePath>
+            </File>
+            <File>
+              <FileName>helm_chassis.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\helm_chassis.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>MOTOR</GroupName>
           <Files>
             <File>

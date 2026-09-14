@@ -12,6 +12,7 @@
 #include "cmsis_os2.h"
 
 extern VESC vesc_motor[4];
+extern DJI_Motor dji_motor[4];
 extern osMessageQueueId_t handleQueueHandle;
 extern osMessageQueueId_t imuQueueHandle;
 void My_init(void);

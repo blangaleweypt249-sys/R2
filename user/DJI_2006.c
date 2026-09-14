@@ -1,4 +1,10 @@
 #include "DJI_2006.h"
+#include <string.h>
+
+static uint32_t command_id(const DJI_Motor *motor, uint8_t command)
+{
+    return 0x300U | ((uint32_t)command << 4) | motor->motor_id;
+}
 
 static void int16_packet(DJI_Motor *motor)
 {
@@ -15,11 +21,6 @@ void DJI2006_Init(DJI_Motor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_i
     motor->ftarget_position = 0.0f;
     motor->target_speed = 0;
     motor->target_position = 0;
-    motor->relative_position = 0;
-    motor->actual_position = 0;
-    motor->actual_speed = 0;
-    motor->dji_state = false;
-    motor->dji_feed_id = 0;
 }
 
 void DJI2006_speed(DJI_Motor *motor,float speed)
@@ -36,7 +37,7 @@ void DJI2006_speed(DJI_Motor *motor,float speed)
     {
         data[i]=0;
     }
-    CAN_Transmit(motor->hfdcan,0,motor->can_id,data,8);
+    CAN_Transmit(motor->hfdcan,0,command_id(motor, 1U),data,8);
 }
 
 void DJI2006_position(DJI_Motor *motor,float position)
@@ -53,7 +54,7 @@ void DJI2006_position(DJI_Motor *motor,float position)
     {
         data[i]=0;
     }
-    CAN_Transmit(motor->hfdcan,0,motor->can_id,data,8);
+    CAN_Transmit(motor->hfdcan,0,command_id(motor, 2U),data,8);
 }
 
 void DJI2006_stop(DJI_Motor *motor)
@@ -66,7 +67,7 @@ void DJI2006_stop(DJI_Motor *motor)
     {
         data[i]=0;
     }
-    CAN_Transmit(motor->hfdcan,0,motor->can_id,data,8);
+    CAN_Transmit(motor->hfdcan,0,command_id(motor, 0U),data,8);
 }
 
 void DJI2006_to_zero(DJI_Motor *motor)
@@ -79,12 +80,27 @@ void DJI2006_to_zero(DJI_Motor *motor)
     {
         data[i]=0;
     }
-    CAN_Transmit(motor->hfdcan,0,motor->can_id,data,8);
+    CAN_Transmit(motor->hfdcan,0,command_id(motor, 3U),data,8);
+}
+
+void DJI2006_sign_zero(DJI_Motor *motor)
+{
+    uint8_t data[8];
+    motor->mode = DJI_sign_zero;
+    data[0]= motor->motor_id;
+    data[1]= motor->mode;
+    for(uint8_t i=2;i<8;i++)
+    {
+        data[i]=0;
+    }
+    CAN_Transmit(motor->hfdcan,0,command_id(motor, 4U),data,8);
 }
 
 void DJI2006_Analysisdata(DJI_Motor *motor, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data)
 {
-    if(motor ==NULL || rx_header == NULL || data == NULL||rx_header->DataLength != FDCAN_DLC_BYTES_8)
+    if(motor ==NULL || rx_header == NULL || data == NULL ||
+       (rx_header->DataLength != FDCAN_DLC_BYTES_4 &&
+        rx_header->DataLength != FDCAN_DLC_BYTES_8))
     {
         return;
     }
@@ -92,11 +108,8 @@ void DJI2006_Analysisdata(DJI_Motor *motor, FDCAN_RxHeaderTypeDef *rx_header, ui
 	{
 		if(rx_header->Identifier == (0x390U + motor->motor_id ))
 		{
-            motor->relative_position = (int16_t)(((uint16_t)data[0] << 8) | data[1]);
-            motor->actual_position = (uint16_t)(((uint16_t)data[2] << 8) | data[3]);
-            motor->actual_speed = (int16_t)(((uint16_t)data[4] << 8) | data[5]);
-            motor->dji_state = data[6];
-            motor->dji_feed_id = data[7];
+            if (rx_header->DataLength == FDCAN_DLC_BYTES_4)
+                memcpy(&motor->actual_angle, data, sizeof(motor->actual_angle));
         }
     }
 }

@@ -50,7 +50,7 @@ void StartchassisTask(void *argument)
                 test[1] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
                 test[2] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2);
                 test[3] = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
-                //DJI_calibration();
+                DJI_calibration();
 		        osDelay(100);
                 //DJI2006_position(&dji_motor[0], 90.0f);
 		        helm_chassis_ready();

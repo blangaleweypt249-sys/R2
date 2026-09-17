@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "mymain.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,6 +71,11 @@ const osMessageQueueAttr_t handleQueue_attributes = {
 osMessageQueueId_t imuQueueHandle;
 const osMessageQueueAttr_t imuQueue_attributes = {
   .name = "imuQueue"
+};
+/* Definitions for dt35Queue */
+osMessageQueueId_t dt35QueueHandle;
+const osMessageQueueAttr_t dt35Queue_attributes = {
+  .name = "dt35Queue"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -151,10 +156,13 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the queue(s) */
   /* creation of handleQueue */
-  handleQueueHandle = osMessageQueueNew (8, sizeof(uint8_t), &handleQueue_attributes);
+  handleQueueHandle = osMessageQueueNew (1, sizeof(receive_handle), &handleQueue_attributes);
 
   /* creation of imuQueue */
-  imuQueueHandle = osMessageQueueNew (8, sizeof(uint8_t), &imuQueue_attributes);
+  imuQueueHandle = osMessageQueueNew (1, sizeof(receive_imu), &imuQueue_attributes);
+
+  /* creation of dt35Queue */
+  dt35QueueHandle = osMessageQueueNew (1, sizeof(receive_dt35), &dt35Queue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */

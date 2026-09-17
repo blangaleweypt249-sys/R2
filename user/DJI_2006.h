@@ -20,19 +20,21 @@ typedef struct
   uint32_t can_id;
   uint8_t motor_id;
   DJI_Mode mode;
-  float ftarget_speed;
-  float ftarget_position;
-  int16_t target_speed;
-  int16_t target_position;
+  float target_speed;
+  float target_position;
 
-  //反馈
-  //int16_t relative_position;
-  //uint16_t actual_position;
-  //int16_t actual_speed;
   float actual_angle;
-  //bool dji_state;
-  //uint8_t dji_feed_id;
+  float calibration_angle;
+  bool calibration_valid;
+
 }DJI_Motor;
+
+typedef union
+{
+  float value;
+  uint8_t data[4];
+} packet;
+
 
 void DJI2006_Init(DJI_Motor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id);
 void DJI2006_speed(DJI_Motor *motor,float speed);

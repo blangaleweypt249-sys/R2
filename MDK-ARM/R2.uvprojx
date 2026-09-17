@@ -653,6 +653,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>LOCATION</GroupName>
+          <Files>
+            <File>
+              <FileName>imu_100A.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\imu_100A.c</FilePath>
+            </File>
+            <File>
+              <FileName>imu_100A.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\imu_100A.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>MOTOR</GroupName>
           <Files>
             <File>

@@ -1,5 +1,5 @@
-r2/mymain.o: ..\user\mymain.c ..\user\mymain.h ..\Core\Inc\main.h \
-  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
+r2/imu_100a.o: ..\user\imu_100A.c ..\user\imu_100A.h ..\user\mymain.h \
+  ..\Core\Inc\main.h ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_rcc.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_def.h \
@@ -38,6 +38,5 @@ r2/mymain.o: ..\user\mymain.c ..\user\mymain.h ..\Core\Inc\main.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\user\vesc.h \
-  ..\user\DJI_2006.h ..\user\helm_chassis.h ..\user\imu_100A.h \
-  ..\user\dt35.h ..\user\pid.h \
+  ..\user\DJI_2006.h ..\user\helm_chassis.h ..\user\dt35.h ..\user\pid.h \
   ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h

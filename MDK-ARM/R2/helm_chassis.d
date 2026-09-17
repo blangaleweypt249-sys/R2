@@ -39,5 +39,5 @@ r2/helm_chassis.o: ..\user\helm_chassis.c ..\user\helm_chassis.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\user\vesc.h \
-  ..\user\DJI_2006.h ..\user\pid.h \
+  ..\user\DJI_2006.h ..\user\imu_100A.h ..\user\dt35.h ..\user\pid.h \
   ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h

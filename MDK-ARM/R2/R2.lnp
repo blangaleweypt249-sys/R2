@@ -44,6 +44,7 @@
 "r2\port.o"
 "r2\mymain.o"
 "r2\helm_chassis.o"
+"r2\imu_100a.o"
 "r2\vesc.o"
 "r2\dji_2006.o"
 "r2\pid.o"

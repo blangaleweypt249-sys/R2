@@ -1,6 +1,6 @@
 #ifndef __IMU_100A_H__
 #define __IMU_100A_H__
-#include "mymain.h"
+#include <stdint.h>
 
 typedef union 
 {

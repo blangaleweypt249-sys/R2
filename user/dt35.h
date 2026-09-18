@@ -1,7 +1,7 @@
 #ifndef __DT35_H__
 #define __DT35_H__
 
-#include "mymain.h"
+#include <stdint.h>
 
 typedef union 
 {

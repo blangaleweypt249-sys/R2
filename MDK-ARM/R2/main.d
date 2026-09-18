@@ -46,5 +46,5 @@ r2/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h ..\Core\Inc\dma.h \
   ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
   ..\user\mymain.h D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
-  ..\user\vesc.h ..\user\DJI_2006.h ..\user\helm_chassis.h \
-  ..\user\imu_100A.h ..\user\dt35.h ..\user\pid.h
+  ..\user\pid.h ..\user\vesc.h ..\user\DJI_2006.h ..\user\helm_chassis.h \
+  ..\user\imu_100A.h ..\user\dt35.h

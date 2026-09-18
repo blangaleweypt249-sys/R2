@@ -8,8 +8,8 @@ uint8_t receive_dt35[19];
 uint8_t test[4];
 HandleData handle_data;
 
-Speed world_speed = {0};
-Speed body_speed = {0};
+Speed world_speed;
+Speed body_speed;
 Helm_chassis helm_chassis;
 // uint8_t rx_data[8]; //vesc电机反馈
 // FDCAN_RxHeaderTypeDef rx_header;
@@ -39,6 +39,7 @@ void StartchassisTask(void *argument)
 {
     My_init();
     DJI_calibration();
+    osDelay(5);
     helm_chassis_ready();
 
     for (;;)
@@ -49,13 +50,13 @@ void StartchassisTask(void *argument)
         //        }
         //        for (uint8_t i = 0; i < 4; i++)
         //        {
-        //            DJI2006_speed(&dji_motor[i], 5.0f);
+        //            DJI2006_speed(&dji_motor[3], 5.0f);
         //        }
         //        for(uint8_t i = 0; i < 4; i++)
         //        {
-        //            DJI2006_position(&dji_motor[i], 180.00f);
+        //            DJI2006_position(&dji_motor[1], 180.00f);
         //        }
-        car_angle->actual_angle = Imu_angle;
+        car_angle.actual_angle = Imu_angle;
         if (osMessageQueueGet(handleQueueHandle, receive_handle, NULL, 0U) == osOK)
         {
             Handle_Analysis(receive_handle);
@@ -87,16 +88,16 @@ void Startchassis_can(void *argument)
             osDelay(1);
             continue;
         }
-
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            DJI2006_position(&dji_motor[i], helm_chassis.set_angle[i]);
-        }
-        osDelay(10);
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            vesc_set_rpm(&vesc_motor[i], helm_chassis.helm_speed[i]);
-        }
+        osDelay(20);
+		for (uint8_t i = 0; i < 4; i++)
+		{
+			DJI2006_position(&dji_motor[i], helm_chassis.set_angle[i]);
+		}
+		osDelay(10);
+		for (uint8_t i = 0; i < 4; i++)
+		{
+			vesc_set_rpm(&vesc_motor[i], helm_chassis.helm_speed[i]);
+		}
         osDelay(1);
     }
 }

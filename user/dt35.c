@@ -15,7 +15,7 @@ void DT35_Analysis(uint8_t *data)
         {
             crc += data[i];
         }
-        if (crc & 0xFF == data[17])
+        if ((crc & 0xFF) == data[17])
         {
             for(uint8_t i =1;i<=16;i++)
             {

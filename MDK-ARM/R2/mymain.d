@@ -37,7 +37,7 @@ r2/mymain.o: ..\user\mymain.c ..\user\mymain.h ..\Core\Inc\main.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
-  ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\user\vesc.h \
+  ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\user\pid.h \
+  ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h ..\user\vesc.h \
   ..\user\DJI_2006.h ..\user\helm_chassis.h ..\user\imu_100A.h \
-  ..\user\dt35.h ..\user\pid.h \
-  ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h
+  ..\user\dt35.h

@@ -24,7 +24,6 @@ typedef struct
   float target_position;
 
   float actual_angle;
-  float calibration_angle;
   bool calibration_valid;
 
 }DJI_Motor;

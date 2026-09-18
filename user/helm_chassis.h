@@ -1,6 +1,10 @@
 #ifndef __HELM_CHASSIS_H__
 #define __HELM_CHASSIS_H__
-#include "mymain.h"
+
+#include <stdbool.h>
+#include <stdint.h>
+#include "pid.h"
+#include "DJI_2006.h"
 
 typedef struct
 {

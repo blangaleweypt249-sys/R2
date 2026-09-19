@@ -1,14 +1,15 @@
 #include "mymain.h"
 
-#define STEERING_READY_DEG 10.0f
+#define STEERING_READY_DEG 30.0f
 
 VESC vesc_motor[4];
 DJI_Motor dji_motor[4];
 uint8_t receive_handle[19];
-int16_t handle_value[4];  //测试遥控数据
+int16_t handle_value[4]; // 测试遥控数据
 uint8_t receive_imu[7];
 uint8_t receive_dt35[19];
 uint8_t test[4];
+float last_target[4] = {0.0f};
 HandleData handle_data;
 
 Speed world_speed;
@@ -90,7 +91,7 @@ void StartchassisTask(void *argument)
             DT35_Analysis(receive_dt35);
         }
         World_to_body(&world_speed, &body_speed, Imu_angle);
-		car_angle_maintain(&body_speed, &car_angle);
+        //car_angle_maintain(&body_speed, &car_angle);
         helm_calculate(&body_speed, &helm_chassis);
         osSemaphoreRelease(chassisCalcHandle);
         osDelay(1);
@@ -113,52 +114,53 @@ void Startchassis_can(void *argument)
             continue;
         }
 
-		float set_angle[4];
-		float helm_speed[4];
-		for (uint8_t i = 0; i < 4; i++)
-		{
-			set_angle[i] = helm_chassis.set_angle[i];
-			helm_speed[i] = helm_chassis.helm_speed[i];
-		}
+        float set_angle[4];
+        float helm_speed[4];
+        for (uint8_t i = 0; i < 4; i++)
+        {
+            set_angle[i] = helm_chassis.set_angle[i];
+            helm_speed[i] = helm_chassis.helm_speed[i];
+        }
 
-		for (uint8_t i = 0; i < 4; i++)
-		{
-			DJI2006_position(&dji_motor[i], set_angle[i]);
-		}
-		
-		bool moving = false;
-		for (uint8_t i = 0; i < 4; i++)
-		{
-			if (fabsf(helm_speed[i]) > 0.01f)
-			{
-				moving = true;
-				break;
-			}
-		}
+        for (uint8_t i = 0; i < 4; i++)
+        {
+            DJI2006_position(&dji_motor[i], set_angle[i]);
+        }
 
-		if (!moving)
-		{
-			drive_started = false;
-		}
-		else if (!drive_started)
-		{
-			drive_started = true;
-			for (uint8_t i = 0; i < 4; i++)
-			{
-				if (fabsf(steering_error_deg(set_angle[i],
-				                             dji_motor[i].actual_angle)) > STEERING_READY_DEG)
-				{
-					drive_started = false;
-					break;
-				}
-			}
-		}
+        bool moving = false;
+        for (uint8_t i = 0; i < 4; i++)
+        {
+            if (fabsf(helm_speed[i]) > 0.01f)
+            {
+                moving = true;
+                break;
+            }
+        }
 
-		for (uint8_t i = 0; i < 4; i++)
-		{
-			vesc_set_rpm(&vesc_motor[i],
-			             drive_started ? helm_speed[i] : 0.0f);
-		}
+        if (!moving)
+        {
+            drive_started = false;
+        }
+        else if (!drive_started)
+        {
+            drive_started = true;
+            for (uint8_t i = 0; i < 4; i++)
+            {
+                if (fabsf(steering_error_deg(set_angle[i],
+                                             dji_motor[i].actual_angle)) > STEERING_READY_DEG)
+                {
+                    drive_started = false;
+                    break;
+                }
+            }
+        }
+
+        for (uint8_t i = 0; i < 4; i++)
+        {
+            float planned_speed = speed_planning(helm_speed[i],&last_target[i],100.0f,200.0f);
+            vesc_set_rpm(&vesc_motor[i],
+                         drive_started ? planned_speed : 0.0f);
+        }
         osDelay(1);
     }
 }
@@ -175,7 +177,7 @@ void My_init(void)
     DJI2006_Init(&dji_motor[2], &hfdcan1, 3);
     DJI2006_Init(&dji_motor[3], &hfdcan1, 4);
 
-    pid_init(&pid_CarAnale, 35.0f, 0.006f, 0.1f, 100.0f, 2.0f, 0.05f);
+    pid_init(&pid_CarAnale, 35.0f, 0.006f, 0.1f, 100.0f, 2.0f, 0.02f);
 
     FDCAN1_Init();
 
@@ -203,16 +205,16 @@ void Handle_Analysis(uint8_t *data)
             // 获取摇杆值
             for (uint8_t i = 0; i < 8; i++)
             {
-                handle_data.rocker.u8[i] = data[i + 1];   //8个u8转4个u16
+                handle_data.rocker.u8[i] = data[i + 1]; // 8个u8转4个u16
             }
             handle_value[0] = -Rock_trans(handle_data.rocker.u16[0]);
             handle_value[1] = -Rock_trans(handle_data.rocker.u16[1]);
-            //handle_value[2] = -Rock_trans(handle_data.rocker.u16[2]);   //暂时用不到右摇杆的y轴
+            // handle_value[2] = -Rock_trans(handle_data.rocker.u16[2]);   //暂时用不到右摇杆的y轴
             handle_value[3] = -Rock_trans(handle_data.rocker.u16[3]);
 
             world_speed.vy = handle_value[1] * speed_k;
             world_speed.vx = handle_value[0] * speed_k;
-            //body_speed.vw = handle_value[3] * speed_k;
+            world_speed.vw = handle_value[3] * speed_k;
 
             for (uint8_t i = 0; i < 4; i++)
             {
@@ -223,7 +225,7 @@ void Handle_Analysis(uint8_t *data)
     }
 }
 
-int16_t Rock_trans(uint16_t rock) //把遥控器数值映射到-1000到1000
+int16_t Rock_trans(uint16_t rock) // 把遥控器数值映射到-1000到1000
 {
     int16_t value = 0;
 

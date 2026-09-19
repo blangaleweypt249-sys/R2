@@ -210,8 +210,8 @@ void Handle_Analysis(uint8_t *data)
             //handle_value[2] = -Rock_trans(handle_data.rocker.u16[2]);   //暂时用不到右摇杆的y轴
             handle_value[3] = -Rock_trans(handle_data.rocker.u16[3]);
 
-            world_speed.vy = handle_value[1] * speed_k;
-            world_speed.vx = handle_value[0] * speed_k;
+            body_speed.vy = handle_value[1] * speed_k;
+            body_speed.vx = handle_value[0] * speed_k;
             //body_speed.vw = handle_value[3] * speed_k;
 
             for (uint8_t i = 0; i < 4; i++)

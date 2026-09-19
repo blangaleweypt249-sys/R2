@@ -28,36 +28,36 @@ static float wrap_pi(float angle)
 
 void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
 {
-    if (body_speed->vx == 0.0f && body_speed->vy == 0.0f && fabsf(body_speed->vw) == 0.0f)
+    if (body_speed->vx == 0.0f && body_speed->vy == 0.0f && fabsf(body_speed->vw) < 0.2f)
     {
         for (uint8_t i = 0; i < 4; i++)
         {
             helm_chassises->helm_speed[i] = 0.0f;
         }
-        helm_chassises->helm_angle[0] = atan2f(+half_dy, -half_dx);
-        helm_chassises->helm_angle[1] = atan2f(-half_dy, -half_dx);
-        helm_chassises->helm_angle[2] = atan2f(-half_dy, +half_dx);
-        helm_chassises->helm_angle[3] = atan2f(+half_dy, +half_dx);
+        helm_chassises->helm_angle[0] = atan2f(-half_dx, +half_dy);
+        helm_chassises->helm_angle[1] = atan2f(-half_dx, -half_dy);
+        helm_chassises->helm_angle[2] = atan2f(+half_dx, -half_dy);
+        helm_chassises->helm_angle[3] = atan2f(+half_dx, +half_dy);
     }
     else
     {
-        helm_chassises->helm_angle[0] = atan2f(body_speed->vy + half_dx * body_speed->vw, body_speed->vx - half_dy * body_speed->vw);
-        helm_chassises->helm_angle[1] = atan2f(body_speed->vy - half_dx * body_speed->vw, body_speed->vx - half_dy * body_speed->vw);
-        helm_chassises->helm_angle[2] = atan2f(body_speed->vy - half_dx * body_speed->vw, body_speed->vx + half_dy * body_speed->vw);
-        helm_chassises->helm_angle[3] = atan2f(body_speed->vy + half_dx * body_speed->vw, body_speed->vx + half_dy * body_speed->vw);
+        helm_chassises->helm_angle[0] = -atan2f(body_speed->vy - half_dx * body_speed->vw, body_speed->vx + half_dy * body_speed->vw);
+        helm_chassises->helm_angle[1] = -atan2f(body_speed->vy - half_dx * body_speed->vw, body_speed->vx - half_dy * body_speed->vw);
+        helm_chassises->helm_angle[2] = -atan2f(body_speed->vy + half_dx * body_speed->vw, body_speed->vx - half_dy * body_speed->vw);
+        helm_chassises->helm_angle[3] = -atan2f(body_speed->vy + half_dx * body_speed->vw, body_speed->vx + half_dy * body_speed->vw);
 
-        helm_chassises->helm_speed[0] = -sqrtf(powf(body_speed->vx + half_dy * body_speed->vw, 2) + powf(body_speed->vy - half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[1] = sqrtf(powf(body_speed->vx - half_dy * body_speed->vw, 2) + powf(body_speed->vy - half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[2] = -sqrtf(powf(body_speed->vx - half_dy * body_speed->vw, 2) + powf(body_speed->vy + half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[3] = sqrtf(powf(body_speed->vx + half_dy * body_speed->vw, 2) + powf(body_speed->vy + half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[0] = -sqrtf(powf(body_speed->vy - half_dx * body_speed->vw, 2) + powf(body_speed->vx + half_dy * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[1] = sqrtf(powf(body_speed->vy - half_dx * body_speed->vw, 2) + powf(body_speed->vx - half_dy * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[2] = -sqrtf(powf(body_speed->vy + half_dx * body_speed->vw, 2) + powf(body_speed->vx - half_dy * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[3] = sqrtf(powf(body_speed->vy + half_dx * body_speed->vw, 2) + powf(body_speed->vx + half_dy * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
     }
 
     for (uint8_t i = 0; i < 4; i++)
     {
-        float desired_angle = wrap_pi(helm_chassises->helm_angle[i] - PI / 2.0f);
-        float actual_angle = dji_motor[i].actual_angle * PI / 180.0f;   //转弧度
+        float desired_angle = wrap_pi(helm_chassises->helm_angle[i]);
+        float last_target_angle = helm_chassises->actual_helm_angle[i];
 
-        helm_chassises->delta[i] = wrap_pi(desired_angle - actual_angle);
+        helm_chassises->delta[i] = wrap_pi(desired_angle - last_target_angle);
         if (helm_chassises->delta[i] > PI / 2.0f)
         {
             helm_chassises->delta[i] -= PI;
@@ -69,9 +69,9 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
             helm_chassises->helm_speed[i] *= -1.0f;
         }
 
-        helm_chassises->actual_helm_angle[i] = actual_angle;    //小板反馈的真实舵角
-        helm_chassises->helm_angle[i] = actual_angle + helm_chassises->delta[i];
-        helm_chassises->set_angle[i] = (helm_chassises->helm_angle[i] / PI) * 180.0f;  //转角度
+        helm_chassises->helm_angle[i] = last_target_angle + helm_chassises->delta[i];
+        helm_chassises->actual_helm_angle[i] = helm_chassises->helm_angle[i]; // 上一次完整目标角
+        helm_chassises->set_angle[i] = (helm_chassises->helm_angle[i] / PI) * 180.0f; // 转角度
     }
 }
 
@@ -191,12 +191,13 @@ void helm_chassis_ready(void)
         {
             for (uint8_t i = 0; i < 4; i++)
             {
-                DJI2006_to_zero(&dji_motor[i]);    //必须保证tozero的signzero成功，这期间不能切换模式
+                DJI2006_to_zero(&dji_motor[i]); // 必须保证tozero的signzero成功，这期间不能切换模式
             }
 
             osDelay(10);
         }
         ready_target_initialized = 1U;
+        osSemaphoreRelease(chassisReadyHandle);
     }
 }
 
@@ -213,5 +214,5 @@ void World_to_body(Speed *world_speed, Speed *body_speed, float imu_angle)
 void car_angle_maintain(Speed *world_speed, Angle *angle)
 {
     angle->angle_out = calc_pid(&pid_CarAnale, angle->actual_angle, angle->target_angle);
-    world_speed->actual_vw = angle->angle_out;
+    world_speed->vw = angle->angle_out;
 }

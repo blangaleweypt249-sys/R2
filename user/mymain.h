@@ -27,6 +27,7 @@ typedef struct
 }HandleData;
 
 extern HandleData handle_data;
+extern float speed_k;
 extern VESC vesc_motor[4];
 extern DJI_Motor dji_motor[4];
 extern uint8_t receive_handle[19];
@@ -34,7 +35,11 @@ extern uint8_t receive_imu[7];
 extern uint8_t receive_dt35[19];
 extern osMessageQueueId_t handleQueueHandle;
 extern osMessageQueueId_t imuQueueHandle;
+extern osMessageQueueId_t dt35QueueHandle;
+extern osSemaphoreId_t chassisCalcHandle;
+extern osSemaphoreId_t chassisReadyHandle;
 void My_init(void);
 void Handle_Analysis(uint8_t *data);
+int16_t Rock_trans(uint16_t rock);
 
 #endif

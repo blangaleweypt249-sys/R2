@@ -60,7 +60,7 @@ osThreadId_t chassis_canHandle;
 const osThreadAttr_t chassis_can_attributes = {
   .name = "chassis_can",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal1,
+  .priority = (osPriority_t) osPriorityBelowNormal1,
 };
 /* Definitions for handleQueue */
 osMessageQueueId_t handleQueueHandle;
@@ -76,6 +76,16 @@ const osMessageQueueAttr_t imuQueue_attributes = {
 osMessageQueueId_t dt35QueueHandle;
 const osMessageQueueAttr_t dt35Queue_attributes = {
   .name = "dt35Queue"
+};
+/* Definitions for chassisCalc */
+osSemaphoreId_t chassisCalcHandle;
+const osSemaphoreAttr_t chassisCalc_attributes = {
+  .name = "chassisCalc"
+};
+/* Definitions for chassisReady */
+osSemaphoreId_t chassisReadyHandle;
+const osSemaphoreAttr_t chassisReady_attributes = {
+  .name = "chassisReady"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -145,6 +155,13 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
+
+  /* Create the semaphores(s) */
+  /* creation of chassisCalc */
+  chassisCalcHandle = osSemaphoreNew(1, 0, &chassisCalc_attributes);
+
+  /* creation of chassisReady */
+  chassisReadyHandle = osSemaphoreNew(1, 0, &chassisReady_attributes);
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */

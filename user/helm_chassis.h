@@ -20,7 +20,7 @@ typedef struct
 {
     float helm_angle[4];
     float helm_speed[4];
-    float actual_helm_angle[4];
+    float actual_helm_angle[4]; // 上一次完整目标角，单位为弧度
     float delta[4];
     float set_angle[4];
 }Helm_chassis;
@@ -53,5 +53,7 @@ extern Angle car_angle;
 void DJI_calibration(void);
 void helm_calculate(Speed *body_speed,Helm_chassis *helm_chassises);
 void helm_chassis_ready(void);
+void car_angle_maintain(Speed *world_speed, Angle *angle);
+void World_to_body(Speed *world_speed, Speed *body_speed, float imu_angle);
 
 #endif

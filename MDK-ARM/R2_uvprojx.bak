@@ -662,6 +662,16 @@
               <FileType>5</FileType>
               <FilePath>..\user\imu_100A.h</FilePath>
             </File>
+            <File>
+              <FileName>dt35.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\dt35.c</FilePath>
+            </File>
+            <File>
+              <FileName>dt35.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\dt35.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

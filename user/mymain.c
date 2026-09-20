@@ -15,7 +15,7 @@ HandleData handle_data;
 Speed world_speed;
 Speed body_speed;
 Helm_chassis helm_chassis;
-float speed_k = 0.05f;
+float speed_k = 0.001f;  //最大1m/s
 
 static float steering_error_deg(float target, float actual)
 {
@@ -66,7 +66,7 @@ void StartchassisTask(void *argument)
     {
         //        for (uint8_t i = 0; i < 4; i++) // 测试用
         //        {
-        //            vesc_set_rpm(&vesc_motor[i], 0.0f);
+        //            vesc_set_rpm(&vesc_motor[2], 100.0f);
         //        }
         //        for (uint8_t i = 0; i < 4; i++)
         //        {
@@ -90,8 +90,8 @@ void StartchassisTask(void *argument)
         {
             DT35_Analysis(receive_dt35);
         }
-        World_to_body(&world_speed, &body_speed, Imu_angle);
-        //car_angle_maintain(&body_speed, &car_angle);
+        // World_to_body(&world_speed, &body_speed, Imu_angle);
+        // car_angle_maintain(&body_speed, &car_angle);
         helm_calculate(&body_speed, &helm_chassis);
         osSemaphoreRelease(chassisCalcHandle);
         osDelay(1);
@@ -157,7 +157,7 @@ void Startchassis_can(void *argument)
 
         for (uint8_t i = 0; i < 4; i++)
         {
-            float planned_speed = speed_planning(helm_speed[i],&last_target[i],100.0f,200.0f);
+            float planned_speed = speed_planning(helm_speed[i], &last_target[i], 50.0f, 50.0f);
             vesc_set_rpm(&vesc_motor[i],
                          drive_started ? planned_speed : 0.0f);
         }
@@ -167,10 +167,10 @@ void Startchassis_can(void *argument)
 
 void My_init(void)
 {
-    Vesc_Init(&vesc_motor[0], &hfdcan1, 53);
-    Vesc_Init(&vesc_motor[1], &hfdcan1, 54);
-    Vesc_Init(&vesc_motor[2], &hfdcan1, 51);
-    Vesc_Init(&vesc_motor[3], &hfdcan1, 52);
+    Vesc_Init(&vesc_motor[0], &hfdcan1, 51);
+    Vesc_Init(&vesc_motor[1], &hfdcan1, 52);
+    Vesc_Init(&vesc_motor[2], &hfdcan1, 53);
+    Vesc_Init(&vesc_motor[3], &hfdcan1, 54);
 
     DJI2006_Init(&dji_motor[0], &hfdcan1, 1);
     DJI2006_Init(&dji_motor[1], &hfdcan1, 2);
@@ -212,15 +212,33 @@ void Handle_Analysis(uint8_t *data)
             // handle_value[2] = -Rock_trans(handle_data.rocker.u16[2]);   //暂时用不到右摇杆的y轴
             handle_value[3] = -Rock_trans(handle_data.rocker.u16[3]);
 
-            world_speed.vy = handle_value[1] * speed_k;
-            world_speed.vx = handle_value[0] * speed_k;
-            world_speed.vw = handle_value[3] * speed_k;
+            body_speed.vy = handle_value[1] * speed_k;
+            body_speed.vx = handle_value[0] * speed_k;
+            body_speed.vw = handle_value[3] * speed_k;
 
             for (uint8_t i = 0; i < 4; i++)
             {
                 handle_data.shoulder.u8[i] = data[i + 9];
             }
             // 其他按键暂不解析
+
+            //上方的6个开关
+            for (uint8_t i = 0; i < 6; i++)
+            {
+                handle_data.up_key[i] = data[13] >> i & 0x01;
+            }
+
+            //左边的8个按键
+            for (uint8_t i = 0; i < 8; i++)
+            {
+                handle_data.left_key[i] = data[14] >> i & 0x01;
+            }
+
+            //右边的8个按键
+            for (uint8_t i = 0; i < 8; i++)
+            {
+                handle_data.right_key[i] = data[15] >> i & 0x01;
+            }
         }
     }
 }

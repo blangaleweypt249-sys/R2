@@ -24,6 +24,9 @@ typedef struct
 {
   U8_to_U16 rocker;
   U8_to_U16 shoulder;
+  uint8_t up_key[6];
+  uint8_t left_key[8];
+  uint8_t right_key[8];
 }HandleData;
 
 extern HandleData handle_data;

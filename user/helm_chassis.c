@@ -3,7 +3,7 @@
 
 #define half_dy 0.238        // 几何中心到轮子中心的y轴距离
 #define half_dx 0.252        // 几何中心到轮子中心的x轴距离
-#define motor_diameter 0.075 // 轮子半径
+#define motor_diameter 0.090 // 轮子半径
 #define PI 3.14159265358979323846f
 
 PID pid_CarAnale;
@@ -46,10 +46,10 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
         helm_chassises->helm_angle[2] = atan2f(body_speed->vy - half_dy * body_speed->vw, body_speed->vx + half_dx * body_speed->vw);
         helm_chassises->helm_angle[3] = atan2f(body_speed->vy - half_dy * body_speed->vw, body_speed->vx - half_dx * body_speed->vw);
 
-        helm_chassises->helm_speed[0] = -sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[1] = sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[2] = -sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[3] = sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[0] = -sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[1] = sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[2] = -sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[3] = sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
     }
 
     for (uint8_t i = 0; i < 4; i++)
@@ -156,7 +156,7 @@ void DJI_calibration(void)
             }
             else
             {
-                DJI2006_speed(&dji_motor[3], 5.0f);
+                DJI2006_speed(&dji_motor[3], 8.0f);
             }
         }
         else

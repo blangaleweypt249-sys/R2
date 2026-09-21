@@ -4,7 +4,6 @@
 #define half_dy 0.238        // 几何中心到轮子中心的y轴距离
 #define half_dx 0.252        // 几何中心到轮子中心的x轴距离
 #define motor_diameter 0.090 // 轮子半径
-#define PI 3.14159265358979323846f
 
 PID pid_CarAnale;
 Angle car_angle;
@@ -13,7 +12,7 @@ helm_state helm_states = helm_idle;
 calibration helm_calibration_data = {0}; // 光电门
 volatile uint8_t ready_target_initialized = 0U;
 
-static float wrap_pi(float angle)
+float wrap_pi(float angle)
 {
     while (angle > PI)
     {
@@ -24,6 +23,50 @@ static float wrap_pi(float angle)
         angle += 2.0f * PI;
     }
     return angle;
+}
+
+float wrap_angle(float angle)
+{
+    while (angle > 180.0f)
+    {
+        angle -= 2.0f * 180.0f;
+    }
+    while (angle < -180.0f)
+    {
+        angle += 2.0f * 180.0f;
+    }
+    return angle;
+}
+
+float CosKspeed(float set_angle, float actual_angle, float *compensation_delta)
+{
+    float delta = wrap_angle(set_angle - actual_angle) * (PI / 180.0f);
+
+    if (delta > PI / 2.0f)
+    {
+        delta = PI / 2.0f;
+    }
+    else if (delta < -PI / 2.0f)
+    {
+        delta = -PI / 2.0f;
+    }
+    else if (fabsf(delta) < 0.05f)
+    {
+        delta = 0.0f;
+    }
+
+    if (compensation_delta != NULL)
+    {
+        *compensation_delta = delta;
+    }
+
+    float cos_angle = cosf(delta);
+    if (cos_angle < 0.0f)
+    {
+        cos_angle = 0.0f;
+    }
+
+    return cos_angle * cos_angle * cos_angle;
 }
 
 void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
@@ -46,10 +89,10 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
         helm_chassises->helm_angle[2] = atan2f(body_speed->vy - half_dy * body_speed->vw, body_speed->vx + half_dx * body_speed->vw);
         helm_chassises->helm_angle[3] = atan2f(body_speed->vy - half_dy * body_speed->vw, body_speed->vx - half_dx * body_speed->vw);
 
-        helm_chassises->helm_speed[0] = -sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[1] = sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[2] = -sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
-        helm_chassises->helm_speed[3] = sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f *14.0f/ ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[0] = -sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f * 14.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[1] = sqrtf(powf(body_speed->vy + half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f * 14.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[2] = -sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx + half_dx * body_speed->vw, 2)) * 60.0f * 14.0f / ((2.0f * PI) * motor_diameter);
+        helm_chassises->helm_speed[3] = sqrtf(powf(body_speed->vy - half_dy * body_speed->vw, 2) + powf(body_speed->vx - half_dx * body_speed->vw, 2)) * 60.0f * 14.0f / ((2.0f * PI) * motor_diameter);
     }
 
     for (uint8_t i = 0; i < 4; i++)
@@ -70,7 +113,7 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
         }
 
         helm_chassises->helm_angle[i] = last_target_angle + helm_chassises->delta[i];
-        helm_chassises->actual_helm_angle[i] = helm_chassises->helm_angle[i]; // 上一次完整目标角
+        helm_chassises->actual_helm_angle[i] = helm_chassises->helm_angle[i];         // 上一次完整目标角
         helm_chassises->set_angle[i] = (helm_chassises->helm_angle[i] / PI) * 180.0f; // 转角度
     }
 }
@@ -201,20 +244,33 @@ void helm_chassis_ready(void)
     }
 }
 
-float speed_planning(float target,float *last_target,float accel_step,float decel_step)
+float speed_planning(float target, float *last_target, float accel_step, float decel_step)
 {
-    float delta = target - *last_target;
-
-    if (delta > accel_step)
+    float current = *last_target;
+    float delta = target - current;
+    float step;
+    
+    if (current > 0.0f)
     {
-        delta = accel_step;
+        step = (target > current) ? accel_step : decel_step;
     }
-    else if (delta < -decel_step)
+    else if (current < 0.0f)
     {
-        delta = -decel_step;
+        step = (target < current) ? accel_step : decel_step;
+    }
+    else
+    {
+        step = accel_step;
     }
 
-    *last_target += delta;
+    if (fabsf(delta) <= step)
+    {
+        *last_target = target;
+    }
+    else
+    {
+        *last_target += (delta > 0.0f) ? step : -step;
+    }
 
     return *last_target;
 }

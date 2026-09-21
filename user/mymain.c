@@ -15,22 +15,8 @@ HandleData handle_data;
 Speed world_speed;
 Speed body_speed;
 Helm_chassis helm_chassis;
-float speed_k = 0.001f;  //最大1m/s
+float speed_k = 0.001f; // 最大1m/s
 
-static float steering_error_deg(float target, float actual)
-{
-    float error = target - actual;
-
-    while (error > 180.0f)
-    {
-        error -= 360.0f;
-    }
-    while (error < -180.0f)
-    {
-        error += 360.0f;
-    }
-    return error;
-}
 // uint8_t rx_data[8]; //vesc电机反馈
 // FDCAN_RxHeaderTypeDef rx_header;
 
@@ -124,42 +110,23 @@ void Startchassis_can(void *argument)
 
         for (uint8_t i = 0; i < 4; i++)
         {
+            dji_motor[i].angle_d = dji_motor[i].actual_angle;
+            while (dji_motor[i].angle_d > 180.0f)
+            {
+                dji_motor[i].angle_d -= 360.0f;
+            }
+            while (dji_motor[i].angle_d < -180.0f)
+            {
+                dji_motor[i].angle_d += 360.0f;
+            }
+            dji_motor[i].speed_cosk =CosKspeed(set_angle[i], dji_motor[i].angle_d,&dji_motor[i].compensation_delta);
             DJI2006_position(&dji_motor[i], set_angle[i]);
         }
 
-        bool moving = false;
         for (uint8_t i = 0; i < 4; i++)
         {
-            if (fabsf(helm_speed[i]) > 0.01f)
-            {
-                moving = true;
-                break;
-            }
-        }
-
-        if (!moving)
-        {
-            drive_started = false;
-        }
-        else if (!drive_started)
-        {
-            drive_started = true;
-            for (uint8_t i = 0; i < 4; i++)
-            {
-                if (fabsf(steering_error_deg(set_angle[i],
-                                             dji_motor[i].actual_angle)) > STEERING_READY_DEG)
-                {
-                    drive_started = false;
-                    break;
-                }
-            }
-        }
-
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            float planned_speed = speed_planning(helm_speed[i], &last_target[i], 50.0f, 50.0f);
-            vesc_set_rpm(&vesc_motor[i],
-                         drive_started ? planned_speed : 0.0f);
+            float planned_speed = speed_planning(helm_speed[i], &last_target[i], 20.0f, 40.0f);
+            vesc_set_rpm(&vesc_motor[i], planned_speed * dji_motor[i].speed_cosk);
         }
         osDelay(1);
     }
@@ -222,19 +189,19 @@ void Handle_Analysis(uint8_t *data)
             }
             // 其他按键暂不解析
 
-            //上方的6个开关
+            // 上方的6个开关
             for (uint8_t i = 0; i < 6; i++)
             {
                 handle_data.up_key[i] = data[13] >> i & 0x01;
             }
 
-            //左边的8个按键
+            // 左边的8个按键
             for (uint8_t i = 0; i < 8; i++)
             {
                 handle_data.left_key[i] = data[14] >> i & 0x01;
             }
 
-            //右边的8个按键
+            // 右边的8个按键
             for (uint8_t i = 0; i < 8; i++)
             {
                 handle_data.right_key[i] = data[15] >> i & 0x01;

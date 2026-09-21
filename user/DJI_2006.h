@@ -26,6 +26,9 @@ typedef struct
   float actual_angle;
   bool calibration_valid;
 
+  float angle_d;
+  float compensation_delta;
+  float speed_cosk;
 }DJI_Motor;
 
 typedef union

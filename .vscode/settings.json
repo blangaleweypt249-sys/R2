@@ -26,5 +26,7 @@
     "files.associations": {
         "*.inc": "c"
     },
-    "cmake.sourceDirectory": "C:/Users/17285/Desktop/demo_ww/R2/Drivers/CMSIS/NN"
+    "cmake.cmakePath": "C:/Users/17285/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cmake.exe",
+    "cmake.configureOnOpen": false,
+    "cmake.configureOnEdit": false
 }

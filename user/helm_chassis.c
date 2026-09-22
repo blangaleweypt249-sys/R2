@@ -8,7 +8,6 @@
 PID pid_CarAnale;
 Angle car_angle;
 
-helm_state helm_states = helm_idle;
 calibration helm_calibration_data = {0}; // 光电门
 volatile uint8_t ready_target_initialized = 0U;
 
@@ -77,10 +76,10 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
         {
             helm_chassises->helm_speed[i] = 0.0f;
         }
-        helm_chassises->helm_angle[0] = atan2f(+half_dy, -half_dx);
-        helm_chassises->helm_angle[1] = atan2f(+half_dy, +half_dx);
-        helm_chassises->helm_angle[2] = atan2f(-half_dy, +half_dx);
-        helm_chassises->helm_angle[3] = atan2f(-half_dy, -half_dx);
+        helm_chassises->helm_angle[0] = -atan2f(+half_dy, -half_dx);
+        helm_chassises->helm_angle[1] = -atan2f(+half_dy, +half_dx);
+        helm_chassises->helm_angle[2] = -atan2f(-half_dy, +half_dx);
+        helm_chassises->helm_angle[3] = -atan2f(-half_dy, -half_dx);
     }
     else
     {
@@ -215,8 +214,6 @@ void DJI_calibration(void)
             helm_calibration_data.helm_calibration_flag[3])
         {
             helm_calibration_data.all_helm_success_flag = true;
-
-            helm_states = helm_calibration_success;
         }
 
         osDelay(10);
@@ -249,7 +246,7 @@ float speed_planning(float target, float *last_target, float accel_step, float d
     float current = *last_target;
     float delta = target - current;
     float step;
-    
+
     if (current > 0.0f)
     {
         step = (target > current) ? accel_step : decel_step;

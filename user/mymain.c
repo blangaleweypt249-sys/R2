@@ -1,21 +1,21 @@
 #include "mymain.h"
 
-#define STEERING_READY_DEG 30.0f
-
+/*-----------------全局变量--------------*/
 VESC vesc_motor[4];
 DJI_Motor dji_motor[4];
+HandleData handle_data;
 uint8_t receive_handle[19];
 int16_t handle_value[4]; // 测试遥控数据
 uint8_t receive_imu[7];
 uint8_t receive_dt35[19];
-uint8_t test[4];
-float last_target[4] = {0.0f};
-HandleData handle_data;
+float last_target_speed[4] = {0.0f};
 
+/*-----------------chassis相关--------------*/
 Speed world_speed;
 Speed body_speed;
 Helm_chassis helm_chassis;
 float speed_k = 0.001f; // 最大1m/s
+float speed_w = 0.002f;
 
 // uint8_t rx_data[8]; //vesc电机反馈
 // FDCAN_RxHeaderTypeDef rx_header;
@@ -60,7 +60,7 @@ void StartchassisTask(void *argument)
         //        }
         //        for(uint8_t i = 0; i < 4; i++)
         //        {
-        //            DJI2006_position(&dji_motor[1], 180.00f);
+        //            DJI2006_position(&dji_motor[1], 180.0f);
         //        }
         car_angle.actual_angle = Imu_angle;
         car_angle.target_angle = Imu_angle;
@@ -76,7 +76,7 @@ void StartchassisTask(void *argument)
         {
             DT35_Analysis(receive_dt35);
         }
-        // World_to_body(&world_speed, &body_speed, Imu_angle);
+        World_to_body(&world_speed, &body_speed, Imu_angle);
         // car_angle_maintain(&body_speed, &car_angle);
         helm_calculate(&body_speed, &helm_chassis);
         osSemaphoreRelease(chassisCalcHandle);
@@ -111,23 +111,17 @@ void Startchassis_can(void *argument)
         for (uint8_t i = 0; i < 4; i++)
         {
             dji_motor[i].angle_d = dji_motor[i].actual_angle;
-            while (dji_motor[i].angle_d > 180.0f)
-            {
-                dji_motor[i].angle_d -= 360.0f;
-            }
-            while (dji_motor[i].angle_d < -180.0f)
-            {
-                dji_motor[i].angle_d += 360.0f;
-            }
-            dji_motor[i].speed_cosk =CosKspeed(set_angle[i], dji_motor[i].angle_d,&dji_motor[i].compensation_delta);
+            wrap_angle(dji_motor[i].angle_d);
+            dji_motor[i].speed_cosk = CosKspeed(set_angle[i], dji_motor[i].angle_d, &dji_motor[i].compensation_delta);
             DJI2006_position(&dji_motor[i], set_angle[i]);
         }
 
         for (uint8_t i = 0; i < 4; i++)
         {
-            float planned_speed = speed_planning(helm_speed[i], &last_target[i], 20.0f, 40.0f);
+            float planned_speed = speed_planning(helm_speed[i], &last_target_speed[i], 20.0f, 40.0f);
             vesc_set_rpm(&vesc_motor[i], planned_speed * dji_motor[i].speed_cosk);
         }
+
         osDelay(1);
     }
 }
@@ -177,11 +171,11 @@ void Handle_Analysis(uint8_t *data)
             handle_value[0] = -Rock_trans(handle_data.rocker.u16[0]);
             handle_value[1] = -Rock_trans(handle_data.rocker.u16[1]);
             // handle_value[2] = -Rock_trans(handle_data.rocker.u16[2]);   //暂时用不到右摇杆的y轴
-            handle_value[3] = -Rock_trans(handle_data.rocker.u16[3]);
+            handle_value[3] = Rock_trans(handle_data.rocker.u16[3]);
 
-            body_speed.vy = handle_value[1] * speed_k;
-            body_speed.vx = handle_value[0] * speed_k;
-            body_speed.vw = handle_value[3] * speed_k;
+            world_speed.vy = handle_value[1] * speed_k;
+            world_speed.vx = handle_value[0] * speed_k;
+            world_speed.vw = handle_value[3] * speed_w;
 
             for (uint8_t i = 0; i < 4; i++)
             {

@@ -5,6 +5,7 @@
 
 typedef struct
 {
+  float tau;
   float kp;
   float ki;
   float kd;
@@ -21,8 +22,9 @@ typedef struct
   float d_out;	
 }PID;
 
-void pid_init(PID *pid,float kp,float ki,float kd,float out_limit,float integral_limit,float pid_death);
+void pid_init(PID *pid, float tau, float kp, float ki, float kd, float out_limit, float integral_limit, float pid_dead);
 float calc_pid(PID *pid,float actual,float target);
+float calc_Mit(PID *pid, float actual, float target);
 void pid_reset(PID *pid);
 
 #endif

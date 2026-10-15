@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "pid.h"
-#include "DJI_2006.h"
+#include "DJI_transform.h"
 
 #define PI 3.14159265358979323846f
 
@@ -49,6 +49,8 @@ typedef struct
 }calibration;
 
 extern volatile uint8_t ready_target_initialized;
+extern VESC vesc_motor[4];
+extern DJI_Motor dji_motor[4];
 extern PID pid_CarAnale;
 extern Angle car_angle;
 

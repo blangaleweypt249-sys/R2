@@ -27,6 +27,8 @@
         "*.inc": "c"
     },
     "cmake.cmakePath": "C:/Users/17285/AppData/Local/stm32cube/bundles/cmake/4.0.1+st.3/bin/cmake.exe",
+    "cmake.autoSelectActiveFolder": false,
+    "cmake.autoDetectSourceDirectory": false,
     "cmake.configureOnOpen": false,
     "cmake.configureOnEdit": false
 }

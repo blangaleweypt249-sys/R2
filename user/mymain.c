@@ -1,8 +1,6 @@
 #include "mymain.h"
 
 /*-----------------全局变量--------------*/
-VESC vesc_motor[4];
-DJI_Motor dji_motor[4];
 HandleData handle_data;
 uint8_t receive_handle[19];
 int16_t handle_value[4]; // 测试遥控数据
@@ -20,30 +18,8 @@ float speed_w = 0.002f;
 // uint8_t rx_data[8]; //vesc电机反馈
 // FDCAN_RxHeaderTypeDef rx_header;
 
-static void FDCAN1_Init(void)
-{
-    HAL_FDCAN_ConfigGlobalFilter(&hfdcan1, FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
-    HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
-    HAL_FDCAN_Start(&hfdcan1);
-}
-
-// static void FDCAN2_Init(void)
-// {
-//	HAL_FDCAN_ConfigGlobalFilter(&hfdcan2, FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
-//	HAL_FDCAN_ActivateNotification(&hfdcan2, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
-//	HAL_FDCAN_Start(&hfdcan2);
-// }
-
-// static void FDCAN3_Init(void)
-//{
-//	HAL_FDCAN_ConfigGlobalFilter(&hfdcan3, FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
-//	HAL_FDCAN_ActivateNotification(&hfdcan3, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
-//	HAL_FDCAN_Start(&hfdcan3);
-// }
-
 void StartchassisTask(void *argument)
 {
-    My_init();
     DJI_calibration();
     osDelay(5);
     helm_chassis_ready();
@@ -128,17 +104,20 @@ void Startchassis_can(void *argument)
 
 void My_init(void)
 {
+    // 轮初始化
     Vesc_Init(&vesc_motor[0], &hfdcan1, 51);
     Vesc_Init(&vesc_motor[1], &hfdcan1, 52);
     Vesc_Init(&vesc_motor[2], &hfdcan1, 53);
     Vesc_Init(&vesc_motor[3], &hfdcan1, 54);
 
+    // 舵初始化
     DJI2006_Init(&dji_motor[0], &hfdcan1, 1);
     DJI2006_Init(&dji_motor[1], &hfdcan1, 2);
     DJI2006_Init(&dji_motor[2], &hfdcan1, 3);
     DJI2006_Init(&dji_motor[3], &hfdcan1, 4);
 
-    pid_init(&pid_CarAnale, 35.0f, 0.006f, 0.1f, 100.0f, 2.0f, 0.02f);
+    // 车身保持pid初始化
+    pid_init(&pid_CarAnale, 0.0f, 35.0f, 0.006f, 0.1f, 100.0f, 2.0f, 0.02f);
 
     FDCAN1_Init();
 
@@ -281,28 +260,3 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     }
 }
 
-void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
-{
-    if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != 0U)
-    {
-        FDCAN_RxHeaderTypeDef rx_header;
-        uint8_t rx_data[8];
-        if (HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &rx_header, rx_data) == HAL_OK)
-        {
-            if (rx_header.IdType == FDCAN_STANDARD_ID)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    DJI2006_Analysisdata(&dji_motor[i], &rx_header, rx_data);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    VESC_Analysisdata(&vesc_motor[i], &rx_header, rx_data);
-                }
-            }
-        }
-    }
-}

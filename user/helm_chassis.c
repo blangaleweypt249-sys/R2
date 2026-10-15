@@ -5,6 +5,8 @@
 #define half_dx 0.252        // 几何中心到轮子中心的x轴距离
 #define motor_diameter 0.090 // 轮子半径
 
+VESC vesc_motor[4];
+DJI_Motor dji_motor[4];
 PID pid_CarAnale;
 Angle car_angle;
 

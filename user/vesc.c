@@ -1,6 +1,7 @@
 #include "vesc.h"
 #include <string.h>
 
+#define MOTOR_POLE_PAIRS 14.0f  //rpm=erpm/pole pairs
 #define MOTOR_MAX_CURRENT 60.0f // 最大电流限制为60A
 #define MOTOR_MAX_BRAKE_CURRENT 60.0f
 #define MOTOR_MAX_RPM 10000.0f
@@ -104,7 +105,7 @@ void vesc_set_current_brake(VESC *vesc, float current)
     CAN_Transmit(vesc->hfdcan, 1, vesc->motor_id | (CAN_PACKET_SET_CURRENT_BRAKE << 8), buffer, 4);
 }
 
-void vesc_set_rpm(VESC *vesc, float rpm)
+void vesc_set_rpm(VESC *vesc, float rpm)//erpm
 {
     if (rpm > MOTOR_MAX_RPM)
         rpm = MOTOR_MAX_RPM;
@@ -209,7 +210,7 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
             vesc->feedback.duty_cycle = (int16_t)(((uint16_t)data[6] << 8) | data[7]);
             vesc->feedback.current = vesc->feedback.o_current / 10.0f;
             vesc->feedback.duty = vesc->feedback.duty_cycle / 1000.0f;
-		vesc->feedback.rpm = (float)vesc->feedback.erpm/14.0f;   //换算成机械rpm
+		    vesc->feedback.rpm = (float)vesc->feedback.erpm/MOTOR_POLE_PAIRS;   //换算成机械rpm
             vesc->feedback.actual_speed = vesc->feedback.rpm;
             break;
 
@@ -227,50 +228,3 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
     }
 }
 
-HAL_StatusTypeDef CAN_Transmit(FDCAN_HandleTypeDef *hfdcan, uint8_t type, uint32_t id, uint8_t *data, uint8_t len)
-{
-    FDCAN_TxHeaderTypeDef tx_header;
-    HAL_StatusTypeDef status;
-    uint8_t send_data[8];
-
-    if ((hfdcan == NULL) || (data == NULL) || (len > 8))
-    {
-        return HAL_ERROR; // 数据长度超过8字节，返回错误
-    }
-
-    switch (type)
-    {
-    case 0:
-        tx_header.Identifier = id;
-        tx_header.IdType = FDCAN_STANDARD_ID;
-        tx_header.TxFrameType = FDCAN_DATA_FRAME;
-        tx_header.DataLength = len;
-        tx_header.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-        tx_header.BitRateSwitch = FDCAN_BRS_OFF;
-        tx_header.FDFormat = FDCAN_CLASSIC_CAN;
-        tx_header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-        tx_header.MessageMarker = 0;
-        break;
-    case 1:
-        tx_header.Identifier = id;
-        tx_header.IdType = FDCAN_EXTENDED_ID;
-        tx_header.TxFrameType = FDCAN_DATA_FRAME;
-        tx_header.DataLength = len;
-        tx_header.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-        tx_header.BitRateSwitch = FDCAN_BRS_OFF;
-        tx_header.FDFormat = FDCAN_CLASSIC_CAN;
-        tx_header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-        tx_header.MessageMarker = 0;
-        break;
-    default:
-        return HAL_ERROR; // 不支持的ID类型，返回错误
-    }
-
-    for (uint8_t i = 0; i < len; i++)
-    {
-        send_data[i] = data[i];
-    }
-
-    status = HAL_FDCAN_AddMessageToTxFifoQ(hfdcan, &tx_header, send_data);
-    return status;
-}

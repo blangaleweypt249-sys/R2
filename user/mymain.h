@@ -5,10 +5,11 @@
 #include <stdbool.h>
 #include "fdcan.h"
 #include "usart.h"
+#include "bsp_can.h"
 #include "pid.h"
 #include "cmsis_os2.h"
 #include "vesc.h"
-#include "DJI_2006.h"
+#include "DJI_transform.h"
 #include "helm_chassis.h"
 #include "imu_100A.h"
 #include "dt35.h"
@@ -31,8 +32,6 @@ typedef struct
 
 extern HandleData handle_data;
 extern float speed_k;
-extern VESC vesc_motor[4];
-extern DJI_Motor dji_motor[4];
 extern uint8_t receive_handle[19];
 extern uint8_t receive_imu[7];
 extern uint8_t receive_dt35[19];

@@ -179,7 +179,7 @@ void MX_FREERTOS_Init(void) {
   imuQueueHandle = osMessageQueueNew (1, sizeof(receive_imu), &imuQueue_attributes);
 
   /* creation of dt35Queue */
-  dt35QueueHandle = osMessageQueueNew (1, sizeof(receive_dt35), &dt35Queue_attributes);
+  dt35QueueHandle = osMessageQueueNew (1, sizeof(uint8_t), &dt35Queue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */

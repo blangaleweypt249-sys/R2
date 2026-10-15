@@ -46,9 +46,13 @@
 "r2\helm_chassis.o"
 "r2\imu_100a.o"
 "r2\dt35.o"
+"r2\dji_transform.o"
 "r2\vesc.o"
-"r2\dji_2006.o"
+"r2\rs05.o"
+"r2\rs00.o"
+"r2\rs06.o"
 "r2\pid.o"
+"r2\bsp_can.o"
 --strict --scatter "R2\R2.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

@@ -1,5 +1,5 @@
-#ifndef __DJI_2006_H__
-#define __DJI_2006_H__
+#ifndef __DJI_transform_H__
+#define __DJI_transform_H__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -7,11 +7,11 @@
 
 typedef enum
 {
-  DJI_STOP = 0,
-  DJI_SPEED,
-  DJI_POSITION,
-  DJI_to_zero,
-  DJI_sign_zero
+  DJI_STOP = 0,   //停止(电流为0)
+  DJI_SPEED,      //速度模式
+  DJI_POSITION,   //位置模式
+  DJI_to_zero,    //回零(转偏置角)
+  DJI_sign_zero   //标零
 }DJI_Mode;
 
 typedef struct

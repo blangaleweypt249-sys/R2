@@ -681,6 +681,16 @@
           <GroupName>MOTOR</GroupName>
           <Files>
             <File>
+              <FileName>DJI_transform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\DJI_transform.c</FilePath>
+            </File>
+            <File>
+              <FileName>DJI_transform.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\DJI_transform.h</FilePath>
+            </File>
+            <File>
               <FileName>vesc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\vesc.c</FilePath>
@@ -691,14 +701,34 @@
               <FilePath>..\user\vesc.h</FilePath>
             </File>
             <File>
-              <FileName>DJI_2006.c</FileName>
+              <FileName>RS05.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\user\DJI_2006.c</FilePath>
+              <FilePath>..\user\RS05.c</FilePath>
             </File>
             <File>
-              <FileName>DJI_2006.h</FileName>
+              <FileName>RS05.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\user\DJI_2006.h</FilePath>
+              <FilePath>..\user\RS05.h</FilePath>
+            </File>
+            <File>
+              <FileName>RS00.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\RS00.c</FilePath>
+            </File>
+            <File>
+              <FileName>RS00.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\RS00.h</FilePath>
+            </File>
+            <File>
+              <FileName>RS06.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\RS06.c</FilePath>
+            </File>
+            <File>
+              <FileName>RS06.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\RS06.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -714,6 +744,16 @@
               <FileName>pid.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\user\pid.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\bsp_can.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_can.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\bsp_can.h</FilePath>
             </File>
           </Files>
         </Group>

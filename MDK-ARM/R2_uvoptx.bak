@@ -1009,8 +1009,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\vesc.c</PathWithFileName>
-      <FilenameWithoutPath>vesc.c</FilenameWithoutPath>
+      <PathWithFileName>..\user\DJI_transform.c</PathWithFileName>
+      <FilenameWithoutPath>DJI_transform.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1021,8 +1021,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\vesc.h</PathWithFileName>
-      <FilenameWithoutPath>vesc.h</FilenameWithoutPath>
+      <PathWithFileName>..\user\DJI_transform.h</PathWithFileName>
+      <FilenameWithoutPath>DJI_transform.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1033,8 +1033,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\DJI_2006.c</PathWithFileName>
-      <FilenameWithoutPath>DJI_2006.c</FilenameWithoutPath>
+      <PathWithFileName>..\user\vesc.c</PathWithFileName>
+      <FilenameWithoutPath>vesc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1045,8 +1045,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\user\DJI_2006.h</PathWithFileName>
-      <FilenameWithoutPath>DJI_2006.h</FilenameWithoutPath>
+      <PathWithFileName>..\user\vesc.h</PathWithFileName>
+      <FilenameWithoutPath>vesc.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

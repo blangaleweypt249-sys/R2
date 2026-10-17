@@ -51,6 +51,8 @@
 "r2\rs05.o"
 "r2\rs00.o"
 "r2\rs06.o"
+"r2\dji_2006.o"
+"r2\dji_3508.o"
 "r2\pid.o"
 "r2\bsp_can.o"
 --strict --scatter "R2\R2.sct"

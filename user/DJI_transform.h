@@ -29,7 +29,7 @@ typedef struct
   float angle_d;
   float compensation_delta;
   float speed_cosk;
-}DJI_Motor;
+}DJI_HlemMotor;
 
 typedef union
 {
@@ -38,12 +38,12 @@ typedef union
 } packet;
 
 
-void DJI2006_Init(DJI_Motor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id);
-void DJI2006_speed(DJI_Motor *motor,float speed);
-void DJI2006_position(DJI_Motor *motor,float position);
-void DJI2006_stop(DJI_Motor *motor);
-void DJI2006_to_zero(DJI_Motor *motor);
-void DJI2006_sign_zero(DJI_Motor *motor);
-void DJI2006_Analysisdata(DJI_Motor *motor, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data);
+void DJI2006_Init(DJI_HlemMotor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id);
+void DJI2006_speed(DJI_HlemMotor *motor,float speed);
+void DJI2006_position(DJI_HlemMotor *motor,float position);
+void DJI2006_stop(DJI_HlemMotor *motor);
+void DJI2006_to_zero(DJI_HlemMotor *motor);
+void DJI2006_sign_zero(DJI_HlemMotor *motor);
+void DJI2006_Analysisdata(DJI_HlemMotor *motor, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data);
 
 #endif

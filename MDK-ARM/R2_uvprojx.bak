@@ -681,6 +681,16 @@
           <GroupName>MOTOR</GroupName>
           <Files>
             <File>
+              <FileName>DJI_transform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\DJI_transform.c</FilePath>
+            </File>
+            <File>
+              <FileName>DJI_transform.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\DJI_transform.h</FilePath>
+            </File>
+            <File>
               <FileName>vesc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\user\vesc.c</FilePath>
@@ -689,16 +699,6 @@
               <FileName>vesc.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\user\vesc.h</FilePath>
-            </File>
-            <File>
-              <FileName>DJI_2006.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\user\DJI_2006.c</FilePath>
-            </File>
-            <File>
-              <FileName>DJI_2006.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\user\DJI_2006.h</FilePath>
             </File>
             <File>
               <FileName>RS05.c</FileName>

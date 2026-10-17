@@ -1,8 +1,6 @@
-r2/dji_2006.o: ..\user\DJI_2006.c ..\user\DJI_2006.h \
-  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdint.h \
-  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\user\vesc.h \
-  ..\Core\Inc\fdcan.h ..\Core\Inc\main.h \
-  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
+r2/dji_2006.o: ..\user\Dji_2006.c ..\user\Dji_Master.h \
+  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdint.h ..\Core\Inc\fdcan.h \
+  ..\Core\Inc\main.h ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h \
   ..\Core\Inc\stm32h7xx_hal_conf.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_rcc.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_def.h \
@@ -38,4 +36,6 @@ r2/dji_2006.o: ..\user\DJI_2006.c ..\user\DJI_2006.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
-  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\string.h
+  ..\user\bsp_can.h ..\user\helm_chassis.h \
+  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\user\pid.h \
+  ..\user\DJI_transform.h ..\user\vesc.h

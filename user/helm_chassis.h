@@ -50,7 +50,7 @@ typedef struct
 
 extern volatile uint8_t ready_target_initialized;
 extern VESC vesc_motor[4];
-extern DJI_Motor dji_motor[4];
+extern DJI_HlemMotor dji_motor[4];
 extern PID pid_CarAnale;
 extern Angle car_angle;
 

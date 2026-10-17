@@ -6,7 +6,7 @@
 #define motor_diameter 0.090 // 轮子半径
 
 VESC vesc_motor[4];
-DJI_Motor dji_motor[4];
+DJI_HlemMotor dji_motor[4];
 PID pid_CarAnale;
 Angle car_angle;
 

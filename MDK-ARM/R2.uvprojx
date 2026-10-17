@@ -730,6 +730,21 @@
               <FileType>5</FileType>
               <FilePath>..\user\RS06.h</FilePath>
             </File>
+            <File>
+              <FileName>Dji_2006.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Dji_2006.c</FilePath>
+            </File>
+            <File>
+              <FileName>Dji_3508.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\Dji_3508.c</FilePath>
+            </File>
+            <File>
+              <FileName>Dji_Master.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\Dji_Master.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

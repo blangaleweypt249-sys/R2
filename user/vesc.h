@@ -29,6 +29,7 @@ typedef struct
   FDCAN_HandleTypeDef *hfdcan;
   uint8_t motor_id;
   VESC_FeedBack feedback;
+  int num[3];
 }VESC;
 
 void Vesc_Init(VESC *Motor, FDCAN_HandleTypeDef *hcan, uint8_t motor_id);

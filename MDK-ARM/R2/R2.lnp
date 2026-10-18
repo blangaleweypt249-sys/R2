@@ -43,6 +43,7 @@
 "r2\heap_4.o"
 "r2\port.o"
 "r2\mymain.o"
+"r2\statechecktask.o"
 "r2\helm_chassis.o"
 "r2\imu_100a.o"
 "r2\dt35.o"
@@ -55,6 +56,7 @@
 "r2\dji_3508.o"
 "r2\pid.o"
 "r2\bsp_can.o"
+"r2\vofa.o"
 --strict --scatter "R2\R2.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

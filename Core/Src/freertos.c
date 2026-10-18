@@ -48,19 +48,54 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for chassisTask */
-osThreadId_t chassisTaskHandle;
-const osThreadAttr_t chassisTask_attributes = {
-  .name = "chassisTask",
-  .stack_size = 512 * 4,
+/* Definitions for myChassisTask */
+osThreadId_t myChassisTaskHandle;
+const osThreadAttr_t myChassisTask_attributes = {
+  .name = "myChassisTask",
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for chassis_can */
-osThreadId_t chassis_canHandle;
-const osThreadAttr_t chassis_can_attributes = {
-  .name = "chassis_can",
-  .stack_size = 512 * 4,
+/* Definitions for myChassis_can */
+osThreadId_t myChassis_canHandle;
+const osThreadAttr_t myChassis_can_attributes = {
+  .name = "myChassis_can",
+  .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityBelowNormal1,
+};
+/* Definitions for myHandleTask */
+osThreadId_t myHandleTaskHandle;
+const osThreadAttr_t myHandleTask_attributes = {
+  .name = "myHandleTask",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityAboveNormal,
+};
+/* Definitions for myClimbTask */
+osThreadId_t myClimbTaskHandle;
+const osThreadAttr_t myClimbTask_attributes = {
+  .name = "myClimbTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for myPickTask */
+osThreadId_t myPickTaskHandle;
+const osThreadAttr_t myPickTask_attributes = {
+  .name = "myPickTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for myCheckTask */
+osThreadId_t myCheckTaskHandle;
+const osThreadAttr_t myCheckTask_attributes = {
+  .name = "myCheckTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+/* Definitions for myLocationTask */
+osThreadId_t myLocationTaskHandle;
+const osThreadAttr_t myLocationTask_attributes = {
+  .name = "myLocationTask",
+  .stack_size = 256 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for handleQueue */
 osMessageQueueId_t handleQueueHandle;
@@ -77,15 +112,15 @@ osMessageQueueId_t dt35QueueHandle;
 const osMessageQueueAttr_t dt35Queue_attributes = {
   .name = "dt35Queue"
 };
-/* Definitions for chassisCalc */
-osSemaphoreId_t chassisCalcHandle;
-const osSemaphoreAttr_t chassisCalc_attributes = {
-  .name = "chassisCalc"
+/* Definitions for ChassisCalc */
+osSemaphoreId_t ChassisCalcHandle;
+const osSemaphoreAttr_t ChassisCalc_attributes = {
+  .name = "ChassisCalc"
 };
-/* Definitions for chassisReady */
-osSemaphoreId_t chassisReadyHandle;
-const osSemaphoreAttr_t chassisReady_attributes = {
-  .name = "chassisReady"
+/* Definitions for ChassisReady */
+osSemaphoreId_t ChassisReadyHandle;
+const osSemaphoreAttr_t ChassisReady_attributes = {
+  .name = "ChassisReady"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,8 +128,13 @@ const osSemaphoreAttr_t chassisReady_attributes = {
 
 /* USER CODE END FunctionPrototypes */
 
-void StartchassisTask(void *argument);
-void Startchassis_can(void *argument);
+void ChassisTask(void *argument);
+void Chassis_canTask(void *argument);
+void HandleTask(void *argument);
+void ClimbTask(void *argument);
+void PickTask(void *argument);
+void StateCheckTask(void *argument);
+void LocationTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -157,11 +197,11 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_MUTEX */
 
   /* Create the semaphores(s) */
-  /* creation of chassisCalc */
-  chassisCalcHandle = osSemaphoreNew(1, 0, &chassisCalc_attributes);
+  /* creation of ChassisCalc */
+  ChassisCalcHandle = osSemaphoreNew(1, 0, &ChassisCalc_attributes);
 
-  /* creation of chassisReady */
-  chassisReadyHandle = osSemaphoreNew(1, 0, &chassisReady_attributes);
+  /* creation of ChassisReady */
+  ChassisReadyHandle = osSemaphoreNew(1, 0, &ChassisReady_attributes);
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
@@ -186,11 +226,26 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of chassisTask */
-  chassisTaskHandle = osThreadNew(StartchassisTask, NULL, &chassisTask_attributes);
+  /* creation of myChassisTask */
+  myChassisTaskHandle = osThreadNew(ChassisTask, NULL, &myChassisTask_attributes);
 
-  /* creation of chassis_can */
-  chassis_canHandle = osThreadNew(Startchassis_can, NULL, &chassis_can_attributes);
+  /* creation of myChassis_can */
+  myChassis_canHandle = osThreadNew(Chassis_canTask, NULL, &myChassis_can_attributes);
+
+  /* creation of myHandleTask */
+  myHandleTaskHandle = osThreadNew(HandleTask, NULL, &myHandleTask_attributes);
+
+  /* creation of myClimbTask */
+  myClimbTaskHandle = osThreadNew(ClimbTask, NULL, &myClimbTask_attributes);
+
+  /* creation of myPickTask */
+  myPickTaskHandle = osThreadNew(PickTask, NULL, &myPickTask_attributes);
+
+  /* creation of myCheckTask */
+  myCheckTaskHandle = osThreadNew(StateCheckTask, NULL, &myCheckTask_attributes);
+
+  /* creation of myLocationTask */
+  myLocationTaskHandle = osThreadNew(LocationTask, NULL, &myLocationTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -202,40 +257,130 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartchassisTask */
+/* USER CODE BEGIN Header_ChassisTask */
 /**
-  * @brief  Function implementing the chassisTask thread.
+  * @brief  Function implementing the myChassisTask thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartchassisTask */
-__weak void StartchassisTask(void *argument)
+/* USER CODE END Header_ChassisTask */
+__weak void ChassisTask(void *argument)
 {
-  /* USER CODE BEGIN StartchassisTask */
+  /* USER CODE BEGIN ChassisTask */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartchassisTask */
+  /* USER CODE END ChassisTask */
 }
 
-/* USER CODE BEGIN Header_Startchassis_can */
+/* USER CODE BEGIN Header_Chassis_canTask */
 /**
-* @brief Function implementing the chassis_can thread.
+* @brief Function implementing the myChassis_can thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_Startchassis_can */
-__weak void Startchassis_can(void *argument)
+/* USER CODE END Header_Chassis_canTask */
+__weak void Chassis_canTask(void *argument)
 {
-  /* USER CODE BEGIN Startchassis_can */
+  /* USER CODE BEGIN Chassis_canTask */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END Startchassis_can */
+  /* USER CODE END Chassis_canTask */
+}
+
+/* USER CODE BEGIN Header_HandleTask */
+/**
+* @brief Function implementing the myHandleTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_HandleTask */
+__weak void HandleTask(void *argument)
+{
+  /* USER CODE BEGIN HandleTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END HandleTask */
+}
+
+/* USER CODE BEGIN Header_ClimbTask */
+/**
+* @brief Function implementing the myClimbTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_ClimbTask */
+__weak void ClimbTask(void *argument)
+{
+  /* USER CODE BEGIN ClimbTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END ClimbTask */
+}
+
+/* USER CODE BEGIN Header_PickTask */
+/**
+* @brief Function implementing the myPickTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_PickTask */
+__weak void PickTask(void *argument)
+{
+  /* USER CODE BEGIN PickTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END PickTask */
+}
+
+/* USER CODE BEGIN Header_StateCheckTask */
+/**
+* @brief Function implementing the myCheckTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StateCheckTask */
+__weak void StateCheckTask(void *argument)
+{
+  /* USER CODE BEGIN StateCheckTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StateCheckTask */
+}
+
+/* USER CODE BEGIN Header_LocationTask */
+/**
+* @brief Function implementing the myLocationTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_LocationTask */
+__weak void LocationTask(void *argument)
+{
+  /* USER CODE BEGIN LocationTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END LocationTask */
 }
 
 /* Private application code --------------------------------------------------*/

@@ -29,6 +29,7 @@ typedef struct
   float angle_d;
   float compensation_delta;
   float speed_cosk;
+  int num[3];
 }DJI_HlemMotor;
 
 typedef union

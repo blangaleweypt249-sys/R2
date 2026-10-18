@@ -117,7 +117,8 @@ void DJI_3508ReadDate(DJI_Motor *Motor, uint8_t rx_data[8], FDCAN_RxHeaderTypeDe
     int32_t delta = 0;
     if (rx_header->Identifier != Motor->feedback_id)
         return;
-    if (rx_header->IdType != FDCAN_STANDARD_ID)
+    if ((rx_header->IdType != FDCAN_STANDARD_ID) ||
+        (rx_header->DataLength != FDCAN_DLC_BYTES_8))
         return;
     Motor->encoder = ((uint16_t)rx_data[0] << 8) | rx_data[1];
     Motor->speed_rpm = (rx_data[2] << 8) | rx_data[3];
@@ -139,4 +140,9 @@ void DJI_3508ReadDate(DJI_Motor *Motor, uint8_t rx_data[8], FDCAN_RxHeaderTypeDe
     }
     Motor->angle_deg = (float)Motor->total_encoder * 360.0f /
                        (8192.0f * DJI3508_EXTERNAL_RATIO);
+
+    if (Motor->num[0] >= 1000)
+        Motor->num[0] = 0;
+    else
+        Motor->num[0]++;
 }

@@ -77,7 +77,13 @@ void DJI2006_Analysisdata(DJI_HlemMotor *motor, FDCAN_RxHeaderTypeDef *rx_header
         if (rx_header->Identifier == (0x390U + motor->motor_id))
         {
             if (rx_header->DataLength == FDCAN_DLC_BYTES_4)
+            {
                 memcpy(&motor->actual_angle, data, sizeof(motor->actual_angle));
+                if (motor->num[0] >= 1000)
+                    motor->num[0] = 0;
+                else
+                    motor->num[0]++;
+            }
         }
     }
 }

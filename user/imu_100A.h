@@ -9,6 +9,7 @@ typedef union
 }flo_to_u8;
 
 extern float Imu_angle;
+extern int imu_num[3];
 void Imu_Analysis(uint8_t *data);
 
 #endif

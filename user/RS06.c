@@ -34,7 +34,7 @@ int RS06_Init(RS06 *Motor, bool zero_flag, FDCAN_HandleTypeDef *hcan, uint16_t m
         RS06_SetZero(Motor);
         osDelay(10);
     }
-    for (uint8_t retry = 0; retry < 10U; retry++)
+    for (uint8_t retry = 0; retry < 10U; retry++)//防止初始化失败
     {
         RS06_SetMode(Motor, mode);
         osDelay(10);
@@ -213,6 +213,11 @@ void RS06_ReadData(RS06 *rs06, uint8_t back_data[8], FDCAN_RxHeaderTypeDef *rx_h
                 rs06->mit.last_cmd_speed = rs06->feedback.speed_fed;
                 rs06->mit.last_cmd_torque = rs06->feedback.torque_fed;
             }
+
+            if (rs06->num[0] >= 1000)
+                rs06->num[0] = 0;
+            else
+                rs06->num[0]++;
         }
     }
 }

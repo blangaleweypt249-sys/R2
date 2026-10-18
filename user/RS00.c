@@ -34,7 +34,7 @@ int RS00_Init(RS00 *Motor, bool zero_flag, FDCAN_HandleTypeDef *hcan, uint16_t m
         RS00_SetZero(Motor);
         osDelay(10);
     }
-    for (uint8_t retry = 0; retry < 10U; retry++)
+    for (uint8_t retry = 0; retry < 10U; retry++)//防止初始化失败
     {
         RS00_SetMode(Motor, mode);
         osDelay(10);
@@ -213,6 +213,11 @@ void RS00_ReadData(RS00 *rs00, uint8_t back_data[8], FDCAN_RxHeaderTypeDef *rx_h
                 rs00->mit.last_cmd_speed = rs00->feedback.speed_fed;
                 rs00->mit.last_cmd_torque = rs00->feedback.torque_fed;
             }
+
+            if (rs00->num[0] >= 1000)
+                rs00->num[0] = 0;
+            else
+                rs00->num[0]++;
         }
     }
 }

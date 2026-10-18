@@ -18,7 +18,7 @@ float speed_w = 0.002f;
 // uint8_t rx_data[8]; //vesc电机反馈
 // FDCAN_RxHeaderTypeDef rx_header;
 
-void StartchassisTask(void *argument)
+void ChassisTask(void *argument)
 {
     DJI_calibration();
     osDelay(5);
@@ -55,23 +55,23 @@ void StartchassisTask(void *argument)
         World_to_body(&world_speed, &body_speed, Imu_angle);
         // car_angle_maintain(&body_speed, &car_angle);
         helm_calculate(&body_speed, &helm_chassis);
-        osSemaphoreRelease(chassisCalcHandle);
+        osSemaphoreRelease(ChassisCalcHandle);
         osDelay(1);
     }
 }
 
-void Startchassis_can(void *argument)
+void Chassis_canTask(void *argument)
 {
     bool drive_started = false;
 
-    if (osSemaphoreAcquire(chassisReadyHandle, osWaitForever) != osOK)
+    if (osSemaphoreAcquire(ChassisReadyHandle, osWaitForever) != osOK)
     {
         return;
     }
 
     for (;;)
     {
-        if (osSemaphoreAcquire(chassisCalcHandle, osWaitForever) != osOK)
+        if (osSemaphoreAcquire(ChassisCalcHandle, osWaitForever) != osOK)
         {
             continue;
         }
@@ -120,6 +120,8 @@ void My_init(void)
     pid_init(&pid_CarAnale, 0.0f, 35.0f, 0.006f, 0.1f, 100.0f, 2.0f, 0.02f);
 
     FDCAN1_Init();
+    FDCAN2_Init();
+    FDCAN3_Init();
 
     HAL_UARTEx_ReceiveToIdle_DMA(&huart1, receive_handle, sizeof(receive_handle));
     __HAL_DMA_DISABLE_IT(huart1.hdmarx, DMA_IT_HT);
@@ -160,7 +162,6 @@ void Handle_Analysis(uint8_t *data)
             {
                 handle_data.shoulder.u8[i] = data[i + 9];
             }
-            // 其他按键暂不解析
 
             // 上方的6个开关
             for (uint8_t i = 0; i < 6; i++)
@@ -179,6 +180,11 @@ void Handle_Analysis(uint8_t *data)
             {
                 handle_data.right_key[i] = data[15] >> i & 0x01;
             }
+
+            if (handle_data.num[0] >= 1000)
+                handle_data.num[0] = 0;
+            else
+                handle_data.num[0]++;
         }
     }
 }

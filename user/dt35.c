@@ -17,14 +17,31 @@ void DT35_Analysis(uint8_t *data)
         }
         if ((crc & 0xFF) == data[17])
         {
-            for(uint8_t i =1;i<=16;i++)
+            for (uint8_t i = 1; i <= 16; i++)
             {
-                distance.u8[i-1] = data[i];
+                distance.u8[i - 1] = data[i];
             }
             dt35_front.actual_dt35_distance = distance.flo[3];
             dt35_back.actual_dt35_distance = distance.flo[0];
             dt35_left.actual_dt35_distance = distance.flo[1];
             dt35_right.actual_dt35_distance = distance.flo[2];
+
+            if (dt35_front.dt35_num[0] >= 1000)
+                dt35_front.dt35_num[0] = 0;
+            else
+                dt35_front.dt35_num[0]++;
+            if (dt35_back.dt35_num[0] >= 1000)
+                dt35_back.dt35_num[0] = 0;
+            else
+                dt35_back.dt35_num[0]++;
+            if (dt35_left.dt35_num[0] >= 1000)
+                dt35_left.dt35_num[0] = 0;
+            else
+                dt35_left.dt35_num[0]++;
+            if (dt35_right.dt35_num[0] >= 1000)
+                dt35_right.dt35_num[0] = 0;
+            else
+                dt35_right.dt35_num[0]++;
         }
     }
 }

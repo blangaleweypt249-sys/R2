@@ -635,6 +635,16 @@
               <FileType>5</FileType>
               <FilePath>..\user\mymain.h</FilePath>
             </File>
+            <File>
+              <FileName>StateCheckTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\StateCheckTask.c</FilePath>
+            </File>
+            <File>
+              <FileName>StateCheckTask.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\StateCheckTask.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -769,6 +779,16 @@
               <FileName>bsp_can.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\user\bsp_can.h</FilePath>
+            </File>
+            <File>
+              <FileName>vofa.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\user\vofa.c</FilePath>
+            </File>
+            <File>
+              <FileName>vofa.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\user\vofa.h</FilePath>
             </File>
           </Files>
         </Group>

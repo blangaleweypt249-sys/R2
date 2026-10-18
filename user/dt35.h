@@ -13,8 +13,13 @@ typedef struct
 {
 	float actual_dt35_distance;
 	float target_dt35_distance;
+    int dt35_num[3];
 }DT35_Move;
 
+extern DT35_Move dt35_front;
+extern DT35_Move dt35_back;
+extern DT35_Move dt35_left;
+extern DT35_Move dt35_right;
 void DT35_Analysis(uint8_t *data);
 
 #endif

@@ -2,6 +2,7 @@
 
 flo_to_u8 imu_data;
 float Imu_angle;
+int imu_num[3];
 
 
 void Imu_Analysis(uint8_t *data)
@@ -20,6 +21,10 @@ void Imu_Analysis(uint8_t *data)
             imu_data.u8[i] = data[i+1];
         }
         Imu_angle = imu_data.flo;
+        if (imu_num[0] >= 1000)
+            imu_num[0] = 0;
+        else
+            imu_num[0]++;
     }
   }
 }

@@ -50,6 +50,7 @@ typedef struct
     RS06_MIT mit;
     RS06_feedback feedback;
     FDCAN_HandleTypeDef hcan;
+    int num[3];
 } RS06;
 
 int RS06_Init(RS06 *Motor, bool zero_flag, FDCAN_HandleTypeDef *hcan, uint16_t motor_id, run_mode mode);

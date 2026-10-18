@@ -28,6 +28,7 @@ typedef struct
   uint8_t up_key[6];
   uint8_t left_key[8];
   uint8_t right_key[8];
+  int num[3];
 }HandleData;
 
 extern HandleData handle_data;
@@ -38,8 +39,8 @@ extern uint8_t receive_dt35[19];
 extern osMessageQueueId_t handleQueueHandle;
 extern osMessageQueueId_t imuQueueHandle;
 extern osMessageQueueId_t dt35QueueHandle;
-extern osSemaphoreId_t chassisCalcHandle;
-extern osSemaphoreId_t chassisReadyHandle;
+extern osSemaphoreId_t ChassisCalcHandle;
+extern osSemaphoreId_t ChassisReadyHandle;
 void My_init(void);
 void Handle_Analysis(uint8_t *data);
 int16_t Rock_trans(uint16_t rock);

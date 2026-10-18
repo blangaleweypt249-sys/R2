@@ -239,7 +239,7 @@ void helm_chassis_ready(void)
             osDelay(10);
         }
         ready_target_initialized = 1U;
-        osSemaphoreRelease(chassisReadyHandle);
+        osSemaphoreRelease(ChassisReadyHandle);
     }
 }
 

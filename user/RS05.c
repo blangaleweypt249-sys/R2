@@ -74,7 +74,7 @@ int RS05_Init(RS05 *Motor, bool zero_flag, FDCAN_HandleTypeDef *hcan, uint16_t m
         RS05_SetZero(Motor);
         osDelay(10);
     }
-    for (uint8_t retry = 0; retry < 10U; retry++)
+    for (uint8_t retry = 0; retry < 10U; retry++)//防止初始化失败
     {
         RS05_SetMode(Motor, mode);
         osDelay(10);
@@ -253,6 +253,11 @@ void RS05_ReadData(RS05 *rs05, uint8_t back_data[8], FDCAN_RxHeaderTypeDef *rx_h
                 rs05->mit.last_cmd_speed = rs05->feedback.speed_fed;
                 rs05->mit.last_cmd_torque = rs05->feedback.torque_fed;
             }
+
+            if (rs05->num[0] >= 1000)
+                rs05->num[0] = 0;
+            else
+                rs05->num[0]++;
         }
     }
 }

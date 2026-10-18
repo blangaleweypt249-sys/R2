@@ -1,6 +1,6 @@
 #include "WpLib.h"
 
-uint8_t My_CrcSum(uint8_t *data, uint8_t len)
+uint8_t My_CrcSum(uint8_t *data, uint8_t len)//注意此处从0开始计算
 {
     uint16_t crc = 0;
     for (uint8_t i = 0; i < len; i++)

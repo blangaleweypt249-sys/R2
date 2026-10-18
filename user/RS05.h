@@ -58,6 +58,7 @@ typedef struct
     RS05_MIT mit;
     RS05_feedback feedback;
     FDCAN_HandleTypeDef hcan;
+    int num[3];
 } RS05;
 
 typedef union

@@ -212,6 +212,10 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
             vesc->feedback.duty = vesc->feedback.duty_cycle / 1000.0f;
 		    vesc->feedback.rpm = (float)vesc->feedback.erpm/MOTOR_POLE_PAIRS;   //换算成机械rpm
             vesc->feedback.actual_speed = vesc->feedback.rpm;
+            if (vesc->num[0] >= 1000)
+                vesc->num[0] = 0;
+            else
+                vesc->num[0]++;
             break;
 
         case 16: // CAN_PACKET_STATUS_4
@@ -223,6 +227,10 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
             vesc->feedback.temp_motor = vesc->feedback.o_temp_motor / 10.0f;
             vesc->feedback.current_in = vesc->feedback.o_current_in / 10.0f;
             vesc->feedback.actual_postion = vesc->feedback.pid_pos / 50.0f;
+            if (vesc->num[0] >= 1000)
+                vesc->num[0] = 0;
+            else
+                vesc->num[0]++;
             break;
         }
     }

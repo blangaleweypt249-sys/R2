@@ -30,6 +30,7 @@ typedef struct
     uint32_t last_command_tick;
     uint8_t first_feedback;
     uint8_t online;
+    int num[3];
 } DJI_Motor;
 
 void DJI_2006_Init(DJI_Motor *motor, FDCAN_HandleTypeDef *hcan, uint8_t motor_id);

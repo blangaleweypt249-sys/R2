@@ -1,40 +1,45 @@
 #include "vofa.h"
+#include "WpLib.h"
 
-vofa_DJIdata motor;
+//调用频率需根据波特率设定
+static UART_HandleTypeDef *vofa_huart;
 
-float_u8 vofa_Send[VOFA_CHANNEL_COUNT];
+static float_u8 vofa_channel[VOFA_CHANNEL_COUNT];
 static uint8_t send_txbuffer[VOFA_FRAME_SIZE];
 
 static const uint8_t vofa_tail[4] = {0x00, 0x00, 0x80, 0x7F};
 
 void Vofa_Init(UART_HandleTypeDef *huart)
 {
-    motor.huart = huart;
+    vofa_huart = huart;
 }
 
-void Vofa_Send(vofa_DJIdata *data)
+void Vofa_Send(const DJI_Motor *motor)
 {
-    if (data == NULL || data->huart == NULL)
+    if ((motor == NULL) || (vofa_huart == NULL))
         return;
-    vofa_Send[0].f = data->target_speed;
-    vofa_Send[1].f = data->actual_speed;
-    vofa_Send[2].f = data->target_position;
-    vofa_Send[3].f = data->actual_position;
-    vofa_Send[4].f = data->target_current;
-    vofa_Send[5].f = data->actual_current;
+
+    //上一帧 DMA 还没发完就跳过本帧，否则会改坏正在发送的缓冲区
+    if (vofa_huart->gState != HAL_UART_STATE_READY)
+        return;
+
+    vofa_channel[0].f = motor->target_speed;
+    vofa_channel[1].f = motor->speed_rpm;
+    vofa_channel[2].f = motor->target_position;
+    vofa_channel[3].f = motor->angle_deg;
 
     for (uint8_t i = 0; i < VOFA_CHANNEL_COUNT; i++)
     {
-        for (uint8_t j = 0; j < 4; j++)
+        for (uint8_t j = 0; j < 4U; j++)
         {
-            send_txbuffer[i * 4 + j] = vofa_Send[i].u8[j];
+            send_txbuffer[i * 4U + j] = vofa_channel[i].u8[j];
         }
     }
 
-    for (uint8_t i = 0; i < 4; i++)
+    for (uint8_t i = 0; i < 4U; i++)
     {
-        send_txbuffer[VOFA_CHANNEL_COUNT * 4 + i] = vofa_tail[i];
+        send_txbuffer[VOFA_CHANNEL_COUNT * 4U + i] = vofa_tail[i];
     }
 
-    HAL_UART_Transmit_DMA(data->huart,send_txbuffer,VOFA_FRAME_SIZE);
+    (void)HAL_UART_Transmit_DMA(vofa_huart, send_txbuffer, VOFA_FRAME_SIZE);
 }

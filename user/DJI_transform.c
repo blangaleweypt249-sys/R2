@@ -8,7 +8,7 @@ static uint32_t command_id(const DJI_HlemMotor *motor, uint8_t command)
     return 0x300U | ((uint32_t)command << 4) | motor->motor_id;
 }
 
-void DJI2006_Init(DJI_HlemMotor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id)
+void Helm2006_Init(DJI_HlemMotor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id)
 {
     motor->hfdcan = hfdcan;
     motor->can_id = 0x300U;
@@ -17,54 +17,54 @@ void DJI2006_Init(DJI_HlemMotor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t mot
     motor->target_position = 0.0f;
 }
 
-void DJI2006_speed(DJI_HlemMotor *motor, float speed)
+void Helm2006_speed(DJI_HlemMotor *motor, float speed)
 {
     uint8_t data[4];
-    motor->mode = DJI_SPEED;
+    motor->mode = Helm_SPEED;
     motor->target_speed = speed;
     packet_data.value = motor->target_speed;
     for (uint8_t i = 0; i < 4; i++)
     {
         data[i] = packet_data.data[i];
     }
-    CAN_Transmit(motor->hfdcan, 0, command_id(motor, DJI_SPEED), data, 4);
+    CAN_Transmit(motor->hfdcan, 0, command_id(motor, Helm_SPEED), data, 4);
 }
 
-void DJI2006_position(DJI_HlemMotor *motor, float position)
+void Helm2006_position(DJI_HlemMotor *motor, float position)
 {
     uint8_t data[4];
-    motor->mode = DJI_POSITION;
+    motor->mode = Helm_POSITION;
     motor->target_position = position;
     packet_data.value = motor->target_position;
     for (uint8_t i = 0; i < 4; i++)
     {
         data[i] = packet_data.data[i];
     }
-    CAN_Transmit(motor->hfdcan, 0, command_id(motor, DJI_POSITION), data, 4);
+    CAN_Transmit(motor->hfdcan, 0, command_id(motor, Helm_POSITION), data, 4);
 }
 
-void DJI2006_stop(DJI_HlemMotor *motor)
+void Helm2006_stop(DJI_HlemMotor *motor)
 {
     uint8_t data[4] = {0};
-    motor->mode = DJI_STOP;
-    CAN_Transmit(motor->hfdcan, 0, command_id(motor, DJI_STOP), data, 4);
+    motor->mode = Helm_STOP;
+    CAN_Transmit(motor->hfdcan, 0, command_id(motor, Helm_STOP), data, 4);
 }
 
-void DJI2006_to_zero(DJI_HlemMotor *motor)
+void Helm2006_to_zero(DJI_HlemMotor *motor)
 {
     uint8_t data[4] = {0};
-    motor->mode = DJI_to_zero;
-    CAN_Transmit(motor->hfdcan, 0, command_id(motor, DJI_to_zero), data, 4);
+    motor->mode = Helm_to_zero;
+    CAN_Transmit(motor->hfdcan, 0, command_id(motor, Helm_to_zero), data, 4);
 }
 
-void DJI2006_sign_zero(DJI_HlemMotor *motor)
+void Helm2006_sign_zero(DJI_HlemMotor *motor)
 {
     uint8_t data[4] = {0};
-    motor->mode = DJI_sign_zero;
-    CAN_Transmit(motor->hfdcan, 0, command_id(motor, DJI_sign_zero), data, 4);
+    motor->mode = Helm_sign_zero;
+    CAN_Transmit(motor->hfdcan, 0, command_id(motor, Helm_sign_zero), data, 4);
 }
 
-void DJI2006_Analysisdata(DJI_HlemMotor *motor, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data)
+void Helm2006_Analysisdata(DJI_HlemMotor *motor, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data)
 {
     if (motor == NULL || rx_header == NULL || data == NULL ||
         (rx_header->DataLength != FDCAN_DLC_BYTES_4 &&

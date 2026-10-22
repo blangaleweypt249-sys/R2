@@ -84,7 +84,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        DJI2006_Analysisdata(&dji_motor[i], &rx_header, rx_data);
+                        Helm2006_Analysisdata(&dji_motor[i], &rx_header, rx_data);
                     }
                 }
                 else

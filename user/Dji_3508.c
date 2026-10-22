@@ -1,8 +1,8 @@
 #include "Dji_Master.h"
 
 #define DJI3508_EXTERNAL_RATIO 1.0f
-#define DJI3508_CURRENT_LIMIT  10000.0f
-#define DJI3508_SPEED_LIMIT   3000.0f
+#define DJI3508_CURRENT_LIMIT 16384.0f
+#define DJI3508_SPEED_LIMIT 480.0f
 
 static int16_t current[8];
 
@@ -80,8 +80,11 @@ void DJI_3508SetSpeed(DJI_Motor *Motor, float speed_rpm)
     if (Motor == NULL)
         return;
 
+    if (speed_rpm > DJI3508_SPEED_LIMIT)
+        speed_rpm = DJI3508_SPEED_LIMIT;
+    else if (speed_rpm < -DJI3508_SPEED_LIMIT)
+        speed_rpm = -DJI3508_SPEED_LIMIT;
     Motor->target_speed = speed_rpm;
-
     current = calc_pid(&Motor->speed_pid,
                        (float)Motor->speed_rpm,
                        Motor->target_speed);
@@ -121,8 +124,8 @@ void DJI_3508ReadDate(DJI_Motor *Motor, uint8_t rx_data[8], FDCAN_RxHeaderTypeDe
         (rx_header->DataLength != FDCAN_DLC_BYTES_8))
         return;
     Motor->encoder = ((uint16_t)rx_data[0] << 8) | rx_data[1];
-    Motor->speed_rpm = (rx_data[2] << 8) | rx_data[3];
-    Motor->torque_current = (rx_data[4] << 8) | rx_data[5];
+    Motor->speed_rpm = (float)(int16_t)(((uint16_t)rx_data[2] << 8) | rx_data[3]);
+    Motor->torque_current = (int16_t)(((uint16_t)rx_data[4] << 8) | rx_data[5]);
     if (Motor->first_feedback == 0)
     {
         Motor->first_feedback = 1;

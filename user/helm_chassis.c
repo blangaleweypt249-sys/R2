@@ -112,6 +112,10 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
             helm_chassises->delta[i] += PI;
             helm_chassises->helm_speed[i] *= -1.0f;
         }
+        else
+        {
+            helm_chassises->helm_speed[i] *= 1.0f;
+        }
 
         helm_chassises->helm_angle[i] = last_target_angle + helm_chassises->delta[i];
         helm_chassises->actual_helm_angle[i] = helm_chassises->helm_angle[i];         // 上一次完整目标角
@@ -121,126 +125,56 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
 
 void DJI_calibration(void)
 {
-
-    while (helm_calibration_data.all_helm_success_flag == false)
+    while (!helm_calibration_data.all_helm_success_flag)
     {
-        /* ---------- 0号 ---------- */
-
-        if (helm_calibration_data.helm_calibration_flag[0] == false)
+        for (uint8_t i = 0; i < 4; i++)
         {
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) == GPIO_PIN_SET)
+            if (helm_calibration_data.helm_calibration_flag[i])
+                continue;
+
+            GPIO_PinState pin_state;
+
+            switch (i)
             {
-                dji_motor[0].calibration_valid = true;
-                DJI2006_speed(&dji_motor[0], 0.0f);
-                DJI2006_sign_zero(&dji_motor[0]);
-                helm_calibration_data.helm_calibration_flag[0] = true;
+                case 0: pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0); break;
+                case 1: pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1); break;
+                case 2: pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2); break;
+                default: pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3); break;
+            }
+
+            if (pin_state == GPIO_PIN_SET)
+            {
+                Helm2006_speed(&dji_motor[i], 0.0f);
+                Helm2006_sign_zero(&dji_motor[i]);
+                dji_motor[i].calibration_valid = true;
+                helm_calibration_data.helm_calibration_flag[i] = true;
             }
             else
             {
-                DJI2006_speed(&dji_motor[0], 15.0f);
+                Helm2006_speed(&dji_motor[i], 15.0f);
             }
         }
-        else
-        {
-            DJI2006_speed(&dji_motor[0], 0.0f);
-        }
 
-        /* ---------- 1号 ---------- */
-
-        if (helm_calibration_data.helm_calibration_flag[1] == false)
-        {
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1) == GPIO_PIN_SET)
-            {
-                dji_motor[1].calibration_valid = true;
-                DJI2006_speed(&dji_motor[1], 0.0f);
-                DJI2006_sign_zero(&dji_motor[1]);
-                helm_calibration_data.helm_calibration_flag[1] = true;
-            }
-            else
-            {
-                DJI2006_speed(&dji_motor[1], 15.0f);
-            }
-        }
-        else
-        {
-            DJI2006_speed(&dji_motor[1], 0.0f);
-        }
-
-        /* ---------- 2号 ---------- */
-
-        if (helm_calibration_data.helm_calibration_flag[2] == false)
-        {
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2) == GPIO_PIN_SET)
-            {
-                dji_motor[2].calibration_valid = true;
-                DJI2006_speed(&dji_motor[2], 0.0f);
-                DJI2006_sign_zero(&dji_motor[2]);
-                helm_calibration_data.helm_calibration_flag[2] = true;
-            }
-            else
-            {
-                DJI2006_speed(&dji_motor[2], 15.0f);
-            }
-        }
-        else
-        {
-            DJI2006_speed(&dji_motor[2], 0.0f);
-        }
-
-        /* ---------- 3号 ---------- */
-
-        if (helm_calibration_data.helm_calibration_flag[3] == false)
-        {
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3) == GPIO_PIN_SET)
-            {
-                dji_motor[3].calibration_valid = true;
-                DJI2006_speed(&dji_motor[3], 0.0f);
-                DJI2006_sign_zero(&dji_motor[3]);
-                helm_calibration_data.helm_calibration_flag[3] = true;
-            }
-            else
-            {
-                DJI2006_speed(&dji_motor[3], 8.0f);
-            }
-        }
-        else
-        {
-            DJI2006_speed(&dji_motor[3], 0.0f);
-        }
-
-        /* ---------- 检查是否全部完成 ---------- */
-
-        if (helm_calibration_data.helm_calibration_flag[0] &&
+        helm_calibration_data.all_helm_success_flag =
+            helm_calibration_data.helm_calibration_flag[0] &&
             helm_calibration_data.helm_calibration_flag[1] &&
             helm_calibration_data.helm_calibration_flag[2] &&
-            helm_calibration_data.helm_calibration_flag[3])
-        {
-            helm_calibration_data.all_helm_success_flag = true;
-        }
+            helm_calibration_data.helm_calibration_flag[3];
 
-        osDelay(10);
+        osDelay(2);
     }
-}
 
-void helm_chassis_ready(void)
-{
-    if (!ready_target_initialized)
+    // 四个舵轮回零
+    for (uint16_t count = 0; count < 200; count++)
     {
-        if (!dji_motor[0].calibration_valid || !dji_motor[1].calibration_valid ||
-            !dji_motor[2].calibration_valid || !dji_motor[3].calibration_valid)
-            return;
-        for (uint16_t count = 0; count < 200; count++)
-        {
-            for (uint8_t i = 0; i < 4; i++)
-            {
-                DJI2006_to_zero(&dji_motor[i]); // 必须保证tozero的signzero成功，这期间不能切换模式
-            }
+        for (uint8_t i = 0; i < 4; i++)
+            Helm2006_to_zero(&dji_motor[i]);
 
-            osDelay(10);
-        }
-        ready_target_initialized = 1U;
-        osSemaphoreRelease(ChassisReadyHandle);
+        osDelay(1);
     }
+
+    ready_target_initialized = 1U;
+    osSemaphoreRelease(ChassisReadyHandle);
 }
 
 float speed_planning(float target, float *last_target, float accel_step, float decel_step)

@@ -21,9 +21,7 @@ float speed_w = 0.002f;
 void ChassisTask(void *argument)
 {
     DJI_calibration();
-    osDelay(5);
-    helm_chassis_ready();
-
+    
     for (;;)
     {
         //        for (uint8_t i = 0; i < 4; i++) // 测试用
@@ -32,11 +30,11 @@ void ChassisTask(void *argument)
         //        }
         //        for (uint8_t i = 0; i < 4; i++)
         //        {
-        //            DJI2006_speed(&dji_motor[3], 5.0f);
+        //            Helm2006_speed(&dji_motor[3], 5.0f);
         //        }
         //        for(uint8_t i = 0; i < 4; i++)
         //        {
-        //            DJI2006_position(&dji_motor[1], 180.0f);
+        //            Helm2006_position(&dji_motor[1], 180.0f);
         //        }
         car_angle.actual_angle = Imu_angle;
         car_angle.target_angle = Imu_angle;
@@ -89,7 +87,7 @@ void Chassis_canTask(void *argument)
             dji_motor[i].angle_d = dji_motor[i].actual_angle;
             wrap_angle(dji_motor[i].angle_d);
             dji_motor[i].speed_cosk = CosKspeed(set_angle[i], dji_motor[i].angle_d, &dji_motor[i].compensation_delta);
-            DJI2006_position(&dji_motor[i], set_angle[i]);
+            Helm2006_position(&dji_motor[i], set_angle[i]);
         }
 
         for (uint8_t i = 0; i < 4; i++)
@@ -111,10 +109,10 @@ void My_init(void)
     Vesc_Init(&vesc_motor[3], &hfdcan1, 54);
 
     // 舵初始化
-    DJI2006_Init(&dji_motor[0], &hfdcan1, 1);
-    DJI2006_Init(&dji_motor[1], &hfdcan1, 2);
-    DJI2006_Init(&dji_motor[2], &hfdcan1, 3);
-    DJI2006_Init(&dji_motor[3], &hfdcan1, 4);
+    Helm2006_Init(&dji_motor[0], &hfdcan1, 1);
+    Helm2006_Init(&dji_motor[1], &hfdcan1, 2);
+    Helm2006_Init(&dji_motor[2], &hfdcan1, 3);
+    Helm2006_Init(&dji_motor[3], &hfdcan1, 4);
 
     // 车身保持pid初始化
     pid_init(&pid_CarAnale, 0.0f, 35.0f, 0.006f, 0.1f, 100.0f, 2.0f, 0.02f);

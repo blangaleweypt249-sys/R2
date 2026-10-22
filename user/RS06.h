@@ -4,6 +4,7 @@
 #include "vesc.h"
 #include "mymain.h"
 #include "RS05.h"
+#include "Interpolation.h"
 
 typedef struct
 {
@@ -25,6 +26,7 @@ typedef struct
     float last_cmd_position;
     float last_cmd_speed;
     float last_cmd_torque;
+    Interpolation_t position_interpolation;
     bool init_flag;
 } RS06_MIT;
 
@@ -61,7 +63,10 @@ void RS06_WriteParameter(RS06 *rs06, uint16_t index, uint32_t data);
 void RS06_SaveParameter(RS06*rs06);
 void RS06_SetMode(RS06 *rs06, run_mode mode);
 void RS06_SetActiveReporting(RS06 *rs06);
-void RS06_Mit(RS06 *rs06, float torque, float position, float speed, float kp, float kd);
+/* run_time_ms 单位为毫秒；插值开启时需在控制循环中周期调用。 */
+void RS06_Mit(RS06 *rs06, float torque, float position, float speed,
+              float kp, float kd, uint8_t interpolation_enable,
+              uint32_t run_time_ms);
 void RS06_Current(RS06 *rs06, float current);
 void RS06_Speed(RS06 *rs06, float limit_cur, float acc_rad, float speed);
 void RS06_CSP(RS06 *rs06, float limit_spd, float loc_ref);

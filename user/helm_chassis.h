@@ -5,8 +5,7 @@
 #include <stdint.h>
 #include "pid.h"
 #include "DJI_transform.h"
-
-#define PI 3.14159265358979323846f
+#include "WpLib.h"
 
 typedef struct
 {

@@ -49,4 +49,5 @@ r2/freertos.o: ..\Core\Src\freertos.c \
   D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\user\bsp_can.h \
   ..\user\helm_chassis.h ..\user\pid.h ..\user\DJI_transform.h \
-  ..\user\vesc.h ..\user\imu_100A.h ..\user\dt35.h
+  ..\user\vesc.h ..\user\Interpolation.h ..\user\WpLib.h \
+  ..\user\imu_100A.h ..\user\dt35.h

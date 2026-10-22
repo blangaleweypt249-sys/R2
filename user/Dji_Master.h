@@ -21,7 +21,7 @@ typedef struct
     uint16_t encoder;
     uint16_t last_encoder;
     int32_t total_encoder;
-    int16_t speed_rpm; 
+    float speed_rpm; 
     int16_t torque_current;
 
     int16_t output_current;

@@ -69,6 +69,9 @@ int RS05_Init(RS05 *Motor, bool zero_flag, FDCAN_HandleTypeDef *hcan, uint16_t m
     Motor->hcan = *hcan;
     Motor->motor_id = motor_id;
     Motor->mit.init_flag = false;
+    Motor->mit.last_cmd_position = 0.0f;
+    Interpolation_Init(&Motor->mit.position_interpolation, 0.0f, 0.0f, 0.0f);
+    Motor->mit.position_interpolation.last_update_ms = HAL_GetTick();
     if (zero_flag == 1)
     {
         RS05_SetZero(Motor);
@@ -158,11 +161,24 @@ void RS05_SetActiveReporting(RS05 *rs05)
     CAN_Transmit(&rs05->hcan, 1, rs05->id, motor_active_reporting, 7);
 }
 
-void RS05_Mit(RS05 *rs05, float torque, float position, float speed, float kp, float kd)
+void RS05_Mit(RS05 *rs05, float torque, float position, float speed,
+              float kp, float kd, uint8_t interpolation_enable,
+              uint32_t run_time_ms)
 {
     uint8_t mit_data[8];
+
+    //尚未收到位置反馈时，禁止从默认的 0 位置开始插值。
+    if ((interpolation_enable != 0U) && !rs05->mit.init_flag)
+        return;
+
+    position = clampf(position, P_MIN, P_MAX);
     rs05->mit.target_torque = clampf(torque, T_MIN, T_MAX);
-    rs05->mit.target_pos = position = clampf(position, P_MIN, P_MAX);
+    rs05->mit.target_pos = Interpolation_PositionCommand(
+        &rs05->mit.position_interpolation,
+        rs05->mit.last_cmd_position,
+        position,
+        interpolation_enable,
+        run_time_ms);
     rs05->mit.target_speed = speed = clampf(speed, V_MIN, V_MAX);
     rs05->mit.kp = kp = clampf(kp, KP_MIN, KP_MAX);
     rs05->mit.kd = kd = clampf(kd, KD_MIN, KD_MAX);
@@ -252,6 +268,11 @@ void RS05_ReadData(RS05 *rs05, uint8_t back_data[8], FDCAN_RxHeaderTypeDef *rx_h
                 rs05->mit.last_cmd_position = rs05->feedback.pos_fed;
                 rs05->mit.last_cmd_speed = rs05->feedback.speed_fed;
                 rs05->mit.last_cmd_torque = rs05->feedback.torque_fed;
+                Interpolation_Init(&rs05->mit.position_interpolation,
+                                   rs05->feedback.pos_fed,
+                                   rs05->feedback.pos_fed,
+                                   0.0f);
+                rs05->mit.position_interpolation.last_update_ms = HAL_GetTick();
             }
 
             if (rs05->num[0] >= 1000)

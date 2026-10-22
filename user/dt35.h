@@ -1,7 +1,9 @@
 #ifndef __DT35_H__
 #define __DT35_H__
 
+#include "helm_chassis.h"
 #include <stdint.h>
+#include "WpLib.h"
 
 typedef union 
 {

@@ -47,5 +47,5 @@ r2/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
   ..\user\mymain.h D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
   ..\user\bsp_can.h ..\user\helm_chassis.h ..\user\pid.h \
-  ..\user\DJI_transform.h ..\user\vesc.h ..\user\imu_100A.h \
-  ..\user\dt35.h
+  ..\user\DJI_transform.h ..\user\vesc.h ..\user\Interpolation.h \
+  ..\user\WpLib.h ..\user\imu_100A.h ..\user\dt35.h

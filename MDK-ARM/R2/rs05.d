@@ -36,8 +36,9 @@ r2/rs05.o: ..\user\RS05.c ..\user\RS05.h ..\user\vesc.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
-  ..\user\mymain.h D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
+  ..\user\Interpolation.h \
+  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\user\mymain.h \
   ..\Core\Inc\usart.h ..\user\bsp_can.h ..\user\helm_chassis.h \
-  ..\user\pid.h ..\user\DJI_transform.h \
+  ..\user\pid.h ..\user\DJI_transform.h ..\user\WpLib.h \
   ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h ..\user\imu_100A.h \
   ..\user\dt35.h

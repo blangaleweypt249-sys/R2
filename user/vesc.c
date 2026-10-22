@@ -29,6 +29,8 @@ void Vesc_Init(VESC *Motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id)
 	memset(Motor, 0, sizeof(*Motor));
 	Motor->hfdcan = hfdcan;
 	Motor->motor_id = motor_id;
+	Interpolation_Init(&Motor->position_interpolation, 0.0f, 0.0f, 0.0f);
+	Motor->position_interpolation.last_update_ms = HAL_GetTick();
 }
 
 // 大端序
@@ -117,12 +119,27 @@ void vesc_set_rpm(VESC *vesc, float rpm)//erpm
     CAN_Transmit(vesc->hfdcan, 1, vesc->motor_id | (CAN_PACKET_SET_RPM << 8), buffer, 4);
 }
 
-void vesc_set_pos(VESC *vesc, float pos)
+void vesc_set_pos(VESC *vesc, float pos, uint8_t interpolation_enable,
+                  uint32_t run_time_ms)
 {
+    //尚无反馈或直接位置指令作为参考时，不允许从默认的 0 度开始插值
+    if ((interpolation_enable != 0U) &&
+        (vesc->position_reference_initialized == 0U))
+        return;
+
     if (pos > 360.0f)
         pos = 360.0f;
     if (pos < 0.0f)
         pos = 0.0f;
+
+    pos = Interpolation_PositionCommand(
+        &vesc->position_interpolation,
+        vesc->position_interpolation.actual_pos,
+        pos,
+        interpolation_enable,
+        run_time_ms);
+    vesc->position_reference_initialized = 1U;
+
     int32_t index = 0;
     uint8_t buffer[4];
     buffer_int32(buffer, (int32_t)(pos * 1000000.0), &index);
@@ -227,6 +244,15 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
             vesc->feedback.temp_motor = vesc->feedback.o_temp_motor / 10.0f;
             vesc->feedback.current_in = vesc->feedback.o_current_in / 10.0f;
             vesc->feedback.actual_postion = vesc->feedback.pid_pos / 50.0f;
+            if (vesc->position_reference_initialized == 0U)
+            {
+                Interpolation_Init(&vesc->position_interpolation,
+                                   vesc->feedback.actual_postion,
+                                   vesc->feedback.actual_postion,
+                                   0.0f);
+                vesc->position_interpolation.last_update_ms = HAL_GetTick();
+                vesc->position_reference_initialized = 1U;
+            }
             if (vesc->num[0] >= 1000)
                 vesc->num[0] = 0;
             else

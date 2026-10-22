@@ -1,21 +1,10 @@
 #include "Dji_Master.h"
 
 #define DJI2006_EXTERNAL_RATIO 1.0f
-#define DJI2006_CURRENT_LIMIT  10000.0f
-#define DJI2006_SPEED_LIMIT   3000.0f
+#define DJI2006_CURRENT_LIMIT 10000.0f
+#define DJI2006_SPEED_LIMIT 500.0f
 
 static int16_t current[8];
-
-void DJI_2006_Init(DJI_Motor *Motor, FDCAN_HandleTypeDef *hcan, uint8_t motor_id)
-{
-    Motor->hcan = hcan;
-    Motor->motor_id = motor_id;
-    Motor->feedback_id = 0x200 + motor_id;
-    Motor->target_speed = 0.0f;
-    Motor->target_position = 0.0f;
-    Motor->target_current = 0;
-    Motor->first_feedback = 0;
-}
 
 static int16_t limit_current(float current)
 {
@@ -26,32 +15,53 @@ static int16_t limit_current(float current)
     return (int16_t)current;
 }
 
+void DJI_2006_Init(DJI_Motor *Motor, FDCAN_HandleTypeDef *hcan, uint8_t motor_id)
+{
+    Motor->hcan = hcan;
+    Motor->motor_id = motor_id;
+    Motor->feedback_id = 0x200 + motor_id;
+    Motor->target_speed = 0.0f;
+    Motor->target_position = 0.0f;
+    Motor->target_current = 0;
+    Motor->first_feedback = 0;
+
+    pid_init(&Motor->speed_pid,
+             0.0f,
+             10.0f, 0.0f, 0.0f,
+             10000.0f, 3000.0f, 0.0f);
+
+    pid_init(&Motor->position_pid,
+             0.0f,
+             5.0f, 0.0f, 0.0f,
+             3000.0f, 0.0f, 0.5f);
+}
+
 void DJI_2006CAN_Trans_1(FDCAN_HandleTypeDef *hcan)
 {
-	uint8_t current_data[8];
-	current_data[0] = current[0]>>8;
-	current_data[1] = current[0]&0xFF;
-	current_data[2] = current[1]>>8;
-	current_data[3] = current[1]&0xFF;
-	current_data[4] = current[2]>>8;
-	current_data[5] = current[2]&0xFF;
-	current_data[6] = current[3]>>8;
-	current_data[7] = current[3]&0xFF;
-	CAN_Transmit(hcan,0,0x200,current_data,8);
+    uint8_t current_data[8];
+    current_data[0] = current[0] >> 8;
+    current_data[1] = current[0] & 0xFF;
+    current_data[2] = current[1] >> 8;
+    current_data[3] = current[1] & 0xFF;
+    current_data[4] = current[2] >> 8;
+    current_data[5] = current[2] & 0xFF;
+    current_data[6] = current[3] >> 8;
+    current_data[7] = current[3] & 0xFF;
+    CAN_Transmit(hcan, 0, 0x200, current_data, 8);
 }
 
 void DJI_2006CAN_Trans_2(FDCAN_HandleTypeDef *hcan)
 {
-	uint8_t current_data[8];
-	current_data[0] = current[4]>>8;
-	current_data[1] = current[4]&0xFF;
-	current_data[2] = current[5]>>8;
-	current_data[3] = current[5]&0xFF;
-	current_data[4] = current[6]>>8;
-	current_data[5] = current[6]&0xFF;
-	current_data[6] = current[7]>>8;
-	current_data[7] = current[7]&0xFF;
-	CAN_Transmit(hcan,0,0x1FF,current_data,8);
+    uint8_t current_data[8];
+    current_data[0] = current[4] >> 8;
+    current_data[1] = current[4] & 0xFF;
+    current_data[2] = current[5] >> 8;
+    current_data[3] = current[5] & 0xFF;
+    current_data[4] = current[6] >> 8;
+    current_data[5] = current[6] & 0xFF;
+    current_data[6] = current[7] >> 8;
+    current_data[7] = current[7] & 0xFF;
+    CAN_Transmit(hcan, 0, 0x1FF, current_data, 8);
 }
 
 void DJI_2006SetCurrent(DJI_Motor *Motor, int16_t target_current)
@@ -70,6 +80,10 @@ void DJI_2006SetSpeed(DJI_Motor *Motor, float speed_rpm)
     if (Motor == NULL)
         return;
 
+    if (speed_rpm > DJI2006_SPEED_LIMIT)
+        speed_rpm = DJI2006_SPEED_LIMIT;
+    else if (speed_rpm < -DJI2006_SPEED_LIMIT)
+        speed_rpm = -DJI2006_SPEED_LIMIT;
     Motor->target_speed = speed_rpm;
 
     current = calc_pid(&Motor->speed_pid,
@@ -111,8 +125,8 @@ void DJI_2006ReadDate(DJI_Motor *Motor, uint8_t rx_data[8], FDCAN_RxHeaderTypeDe
         (rx_header->DataLength != FDCAN_DLC_BYTES_8))
         return;
     Motor->encoder = ((uint16_t)rx_data[0] << 8) | rx_data[1];
-    Motor->speed_rpm = (rx_data[2] << 8) | rx_data[3];
-    Motor->torque_current = (rx_data[4] << 8) | rx_data[5];
+    Motor->speed_rpm = (float)(int16_t)(((uint16_t)rx_data[2] << 8) | rx_data[3]);
+    Motor->torque_current = (int16_t)(((uint16_t)rx_data[4] << 8) | rx_data[5]);
     if (Motor->first_feedback == 0)
     {
         Motor->first_feedback = 1;

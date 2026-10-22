@@ -38,4 +38,5 @@ r2/dji_2006.o: ..\user\Dji_2006.c ..\user\Dji_Master.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   ..\user\bsp_can.h ..\user\helm_chassis.h \
   D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\user\pid.h \
-  ..\user\DJI_transform.h ..\user\vesc.h
+  ..\user\DJI_transform.h ..\user\vesc.h ..\user\Interpolation.h \
+  ..\user\WpLib.h

@@ -7,19 +7,19 @@
 
 typedef enum
 {
-  DJI_STOP = 0,   //停止(电流为0)
-  DJI_SPEED,      //速度模式
-  DJI_POSITION,   //位置模式
-  DJI_to_zero,    //回零(转偏置角)
-  DJI_sign_zero   //标零
-}DJI_Mode;
+  Helm_STOP = 0,   //停止(电流为0)
+  Helm_SPEED,      //速度模式
+  Helm_POSITION,   //位置模式
+  Helm_to_zero,    //回零(转偏置角)
+  Helm_sign_zero   //标零
+}Helm_Mode;
 
 typedef struct
 {
   FDCAN_HandleTypeDef *hfdcan;
   uint32_t can_id;
   uint8_t motor_id;
-  DJI_Mode mode;
+  Helm_Mode mode;
   float target_speed;
   float target_position;
 
@@ -39,12 +39,12 @@ typedef union
 } packet;
 
 
-void DJI2006_Init(DJI_HlemMotor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id);
-void DJI2006_speed(DJI_HlemMotor *motor,float speed);
-void DJI2006_position(DJI_HlemMotor *motor,float position);
-void DJI2006_stop(DJI_HlemMotor *motor);
-void DJI2006_to_zero(DJI_HlemMotor *motor);
-void DJI2006_sign_zero(DJI_HlemMotor *motor);
-void DJI2006_Analysisdata(DJI_HlemMotor *motor, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data);
+void Helm2006_Init(DJI_HlemMotor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id);
+void Helm2006_speed(DJI_HlemMotor *motor,float speed);
+void Helm2006_position(DJI_HlemMotor *motor,float position);
+void Helm2006_stop(DJI_HlemMotor *motor);
+void Helm2006_to_zero(DJI_HlemMotor *motor);
+void Helm2006_sign_zero(DJI_HlemMotor *motor);
+void Helm2006_Analysisdata(DJI_HlemMotor *motor, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data);
 
 #endif

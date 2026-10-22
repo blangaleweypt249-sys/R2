@@ -38,6 +38,7 @@ r2/helm_chassis.o: ..\user\helm_chassis.c ..\user\helm_chassis.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   ..\user\DJI_transform.h ..\user\vesc.h ..\Core\Inc\fdcan.h \
-  ..\user\mymain.h ..\Core\Inc\usart.h ..\user\bsp_can.h \
+  ..\user\Interpolation.h ..\user\WpLib.h ..\user\mymain.h \
+  ..\Core\Inc\usart.h ..\user\bsp_can.h \
   ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h ..\user\imu_100A.h \
   ..\user\dt35.h

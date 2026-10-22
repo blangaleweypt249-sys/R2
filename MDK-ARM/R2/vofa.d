@@ -36,4 +36,8 @@ r2/vofa.o: ..\user\vofa.c ..\user\vofa.h ..\Core\Inc\main.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
+  ..\user\Dji_Master.h ..\Core\Inc\fdcan.h ..\user\bsp_can.h \
+  ..\user\helm_chassis.h \
+  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\user\pid.h \
+  ..\user\DJI_transform.h ..\user\vesc.h ..\user\Interpolation.h \
   ..\user\WpLib.h

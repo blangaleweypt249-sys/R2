@@ -30,6 +30,8 @@ void StateCheckTask(void *argument)
 
     for (;;)
     {
+        RecoverCANBus();
+
         Device_Offline_State.handle = Check_State(handle_data.num, STATE_TIMEOUT_COUNT);
         Device_Offline_State.imu = Check_State(imu_num, STATE_TIMEOUT_COUNT);
         Device_Offline_State.dt35[0] = Check_State(dt35_front.dt35_num, STATE_TIMEOUT_COUNT);
@@ -45,4 +47,3 @@ void StateCheckTask(void *argument)
         osDelay(10);
     }
 }
-

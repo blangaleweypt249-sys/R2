@@ -1,16 +1,19 @@
 #include "Interpolation.h"
 
-void Interpolation_Init(Interpolation_t *motor, float start_pos, float target_pos, float alltime)
+void Interpolation_Init(Interpolation_t *motor)
 {
     if (motor == NULL)
         return;
 
-    motor->start_pos = start_pos;
-    motor->target_pos = target_pos;
-    motor->alltime = alltime;
+    motor->start_pos = 0.0f;
+    motor->target_pos = 0.0f;
+    motor->actual_pos = 0.0f;
+
+    motor->alltime = 0.0f;
     motor->timed = 0.0f;
-    motor->actual_pos = (alltime > 0.0f) ? start_pos : target_pos;
-    motor->state = (alltime > 0.0f);
+
+    motor->last_update_ms = HAL_GetTick();
+    motor->state = false;//没有在插值状态
 }
 
 float Interpolation_PositionCommand(Interpolation_t *motor, float current_pos, float target_pos, uint8_t enable, uint32_t run_time_ms)

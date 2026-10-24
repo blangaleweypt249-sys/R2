@@ -166,3 +166,30 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 #endif
 
+static void RecoverOneFDCAN(FDCAN_HandleTypeDef *hfdcan)
+{
+    HAL_FDCAN_Stop(hfdcan);
+    HAL_FDCAN_DeInit(hfdcan);
+
+    __HAL_RCC_FDCAN_CLK_DISABLE();
+    __HAL_RCC_FDCAN_FORCE_RESET();
+    __HAL_RCC_FDCAN_RELEASE_RESET();
+    __HAL_RCC_FDCAN_CLK_ENABLE();
+
+    osDelay(5);
+
+    HAL_FDCAN_Init(hfdcan);
+    USER_FDCAN_ConfigAndStart(hfdcan);
+}
+
+void RecoverCANBus(void)
+{
+    FDCAN_HandleTypeDef *cans[] = { &hfdcan1, &hfdcan2, &hfdcan3 };
+    const uint32_t n = sizeof(cans) / sizeof(cans[0]);
+
+    for (uint32_t i = 0; i < n; i++) {
+        if ((cans[i]->Instance->PSR & FDCAN_PSR_BO) == 0U) {
+            RecoverOneFDCAN(cans[i]);
+        }
+    }
+}

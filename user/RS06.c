@@ -30,7 +30,7 @@ int RS06_Init(RS06 *Motor, bool zero_flag, FDCAN_HandleTypeDef *hcan, uint16_t m
     Motor->motor_id = motor_id;
     Motor->mit.init_flag = false;
     Motor->mit.last_cmd_position = 0.0f;
-    Interpolation_Init(&Motor->mit.position_interpolation, 0.0f, 0.0f, 0.0f);
+    Interpolation_Init(&Motor->mit.position_interpolation);
     Motor->mit.position_interpolation.last_update_ms = HAL_GetTick();
     if (zero_flag == 1)
     {
@@ -228,10 +228,9 @@ void RS06_ReadData(RS06 *rs06, uint8_t back_data[8], FDCAN_RxHeaderTypeDef *rx_h
                 rs06->mit.last_cmd_position = rs06->feedback.pos_fed;
                 rs06->mit.last_cmd_speed = rs06->feedback.speed_fed;
                 rs06->mit.last_cmd_torque = rs06->feedback.torque_fed;
-                Interpolation_Init(&rs06->mit.position_interpolation,
-                                   rs06->feedback.pos_fed,
-                                   rs06->feedback.pos_fed,
-                                   0.0f);
+                Interpolation_Init(&rs06->mit.position_interpolation);
+                rs06->mit.position_interpolation.actual_pos =
+                    rs06->feedback.pos_fed;
                 rs06->mit.position_interpolation.last_update_ms = HAL_GetTick();
             }
 

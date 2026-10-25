@@ -1,8 +1,6 @@
 #include "helm_chassis.h"
 #include "mymain.h"
 
-#define half_dy 0.238        // 几何中心到轮子中心的y轴距离
-#define half_dx 0.252        // 几何中心到轮子中心的x轴距离
 #define motor_diameter 0.090 // 轮子半径
 
 VESC vesc_motor[4];
@@ -15,28 +13,54 @@ volatile uint8_t ready_target_initialized = 0U;
 
 float wrap_pi(float angle)
 {
-    while (angle > PI)
+    if (angle > PI || angle < -PI)
     {
-        angle -= 2.0f * PI;
-    }
-    while (angle < -PI)
-    {
-        angle += 2.0f * PI;
+        angle = fmodf(angle, 2.0f * PI);
+        if (angle > PI)
+        {
+            angle -= 2.0f * PI;
+        }
+        else if (angle < -PI)
+        {
+            angle += 2.0f * PI;
+        }
     }
     return angle;
 }
 
 float wrap_angle(float angle)
 {
-    while (angle > 180.0f)
+    if (angle > 180.0f || angle < -180.0f)
     {
-        angle -= 2.0f * 180.0f;
-    }
-    while (angle < -180.0f)
-    {
-        angle += 2.0f * 180.0f;
+        angle = fmodf(angle, 360.0f);
+        if (angle > 180.0f)
+        {
+            angle -= 360.0f;
+        }
+        else if (angle < -180.0f)
+        {
+            angle += 360.0f;
+        }
     }
     return angle;
+}
+
+void Min_Angle(float *delta, float *speed)
+{
+    if (*delta > PI / 2.0f)
+    {
+        *delta -= PI;
+        *speed *= -1.0f;
+    }
+    else if (*delta < -PI / 2.0f)
+    {
+        *delta += PI;
+        *speed *= -1.0f;
+    }
+    else
+    {
+        *speed *= 1.0f;
+    }
 }
 
 float CosKspeed(float set_angle, float actual_angle, float *compensation_delta)
@@ -99,26 +123,15 @@ void helm_calculate(Speed *body_speed, Helm_chassis *helm_chassises)
     for (uint8_t i = 0; i < 4; i++)
     {
         float desired_angle = wrap_pi(helm_chassises->helm_angle[i]);
-        float last_target_angle = helm_chassises->actual_helm_angle[i];
+        float feedback_angle = dji_motor[i].actual_angle * (PI / 180.0f);
+        float normalized_feedback_angle = wrap_pi(feedback_angle);
 
-        helm_chassises->delta[i] = wrap_pi(desired_angle - last_target_angle);
-        if (helm_chassises->delta[i] > PI / 2.0f)
-        {
-            helm_chassises->delta[i] -= PI;
-            helm_chassises->helm_speed[i] *= -1.0f;
-        }
-        else if (helm_chassises->delta[i] < -PI / 2.0f)
-        {
-            helm_chassises->delta[i] += PI;
-            helm_chassises->helm_speed[i] *= -1.0f;
-        }
-        else
-        {
-            helm_chassises->helm_speed[i] *= 1.0f;
-        }
+        helm_chassises->actual_helm_angle[i] = normalized_feedback_angle;
 
-        helm_chassises->helm_angle[i] = last_target_angle + helm_chassises->delta[i];
-        helm_chassises->actual_helm_angle[i] = helm_chassises->helm_angle[i];         // 上一次完整目标角
+        helm_chassises->delta[i] = wrap_pi(desired_angle - normalized_feedback_angle);
+        Min_Angle(&helm_chassises->delta[i], &helm_chassises->helm_speed[i]);
+
+        helm_chassises->helm_angle[i] = feedback_angle + helm_chassises->delta[i];
         helm_chassises->set_angle[i] = (helm_chassises->helm_angle[i] / PI) * 180.0f; // 转角度
     }
 }
@@ -161,7 +174,7 @@ void DJI_calibration(void)
             helm_calibration_data.helm_calibration_flag[2] &&
             helm_calibration_data.helm_calibration_flag[3];
 
-        osDelay(2);
+        osDelay(1);
     }
 
     // 四个舵轮回零

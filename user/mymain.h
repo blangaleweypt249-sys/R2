@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "fdcan.h"
 #include "usart.h"
+#include "spi.h"
 #include "bsp_can.h"
 #include "pid.h"
 #include "cmsis_os2.h"
@@ -13,6 +14,8 @@
 #include "helm_chassis.h"
 #include "imu_100A.h"
 #include "dt35.h"
+#include "STP_23L.h"
+#include "w25q128.h"
 #include "math.h"
 
 typedef union

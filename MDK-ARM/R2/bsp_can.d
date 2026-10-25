@@ -32,6 +32,8 @@ r2/bsp_can.o: ..\user\bsp_can.c ..\user\bsp_can.h ..\Core\Inc\main.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_i2c_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr_ex.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
@@ -39,4 +41,4 @@ r2/bsp_can.o: ..\user\bsp_can.c ..\user\bsp_can.h ..\Core\Inc\main.h \
   ..\Core\Inc\fdcan.h ..\user\helm_chassis.h \
   D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\user\pid.h \
   ..\user\DJI_transform.h ..\user\vesc.h ..\user\Interpolation.h \
-  ..\user\WpLib.h
+  ..\user\WpLib.h ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h

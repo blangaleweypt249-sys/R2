@@ -29,7 +29,7 @@ void Vesc_Init(VESC *Motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id)
 	memset(Motor, 0, sizeof(*Motor));
 	Motor->hfdcan = hfdcan;
 	Motor->motor_id = motor_id;
-	Interpolation_Init(&Motor->position_interpolation, 0.0f, 0.0f, 0.0f);
+	Interpolation_Init(&Motor->position_interpolation);
 	Motor->position_interpolation.last_update_ms = HAL_GetTick();
 }
 
@@ -246,10 +246,9 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
             vesc->feedback.actual_postion = vesc->feedback.pid_pos / 50.0f;
             if (vesc->position_reference_initialized == 0U)
             {
-                Interpolation_Init(&vesc->position_interpolation,
-                                   vesc->feedback.actual_postion,
-                                   vesc->feedback.actual_postion,
-                                   0.0f);
+                Interpolation_Init(&vesc->position_interpolation);
+                vesc->position_interpolation.actual_pos =
+                    vesc->feedback.actual_postion;
                 vesc->position_interpolation.last_update_ms = HAL_GetTick();
                 vesc->position_reference_initialized = 1U;
             }

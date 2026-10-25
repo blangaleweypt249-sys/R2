@@ -7,6 +7,9 @@
 #include "DJI_transform.h"
 #include "WpLib.h"
 
+#define half_dy 0.238        // 几何中心到轮子中心的y轴距离
+#define half_dx 0.252        // 几何中心到轮子中心的x轴距离
+
 typedef struct
 {
 	float vx;
@@ -21,7 +24,7 @@ typedef struct
 {
     float helm_angle[4];
     float helm_speed[4];
-    float actual_helm_angle[4]; // 上一次完整目标角，单位为弧度
+    float actual_helm_angle[4]; // 归一化后的舵向反馈角，单位为弧度
     float delta[4];
     float set_angle[4];
 }Helm_chassis;
@@ -62,5 +65,6 @@ void car_angle_maintain(Speed *world_speed, Angle *angle);
 void World_to_body(Speed *world_speed, Speed *body_speed, float imu_angle);
 float wrap_pi(float angle);
 float wrap_angle(float angle);
+void Min_Angle(float *delta, float *speed);
 
 #endif

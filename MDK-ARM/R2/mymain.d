@@ -32,13 +32,15 @@ r2/mymain.o: ..\user\mymain.c ..\user\mymain.h ..\Core\Inc\main.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_i2c_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr_ex.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
-  ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\user\bsp_can.h \
-  ..\user\helm_chassis.h ..\user\pid.h ..\user\DJI_transform.h \
-  ..\user\vesc.h ..\user\Interpolation.h ..\user\WpLib.h \
-  ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h ..\user\imu_100A.h \
-  ..\user\dt35.h
+  ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\Core\Inc\spi.h \
+  ..\user\bsp_can.h ..\user\helm_chassis.h ..\user\pid.h \
+  ..\user\DJI_transform.h ..\user\vesc.h ..\user\Interpolation.h \
+  ..\user\WpLib.h ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h \
+  ..\user\imu_100A.h ..\user\dt35.h ..\user\STP_23L.h ..\user\w25q128.h

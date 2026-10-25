@@ -84,8 +84,7 @@ void Chassis_canTask(void *argument)
 
         for (uint8_t i = 0; i < 4; i++)
         {
-            dji_motor[i].angle_d = dji_motor[i].actual_angle;
-            wrap_angle(dji_motor[i].angle_d);
+            dji_motor[i].angle_d = wrap_angle(dji_motor[i].actual_angle);
             dji_motor[i].speed_cosk = CosKspeed(set_angle[i], dji_motor[i].angle_d, &dji_motor[i].compensation_delta);
             Helm2006_position(&dji_motor[i], set_angle[i]);
         }
@@ -116,6 +115,8 @@ void My_init(void)
 
     // 车身保持pid初始化
     pid_init(&pid_CarAnale, 0.0f, 35.0f, 0.006f, 0.1f, 100.0f, 2.0f, 0.02f);
+    
+    W25Q128_Init(&w25q128, &hspi6, SPI6_NSS_GPIO_Port, SPI6_NSS_Pin);
 
     FDCAN1_Init();
     FDCAN2_Init();

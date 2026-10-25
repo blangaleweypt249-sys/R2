@@ -22,6 +22,7 @@
 #include "cmsis_os2.h"
 #include "dma.h"
 #include "fdcan.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -107,6 +108,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_FDCAN2_Init();
   MX_FDCAN3_Init();
+  MX_SPI6_Init();
   /* USER CODE BEGIN 2 */
   My_init();//通信基础初始化
             //机构位置初始化

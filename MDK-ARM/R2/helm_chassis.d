@@ -33,12 +33,14 @@ r2/helm_chassis.o: ..\user\helm_chassis.c ..\user\helm_chassis.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_i2c_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr_ex.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h \
   ..\user\DJI_transform.h ..\user\vesc.h ..\Core\Inc\fdcan.h \
   ..\user\Interpolation.h ..\user\WpLib.h ..\user\mymain.h \
-  ..\Core\Inc\usart.h ..\user\bsp_can.h \
+  ..\Core\Inc\usart.h ..\Core\Inc\spi.h ..\user\bsp_can.h \
   ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h ..\user\imu_100A.h \
-  ..\user\dt35.h
+  ..\user\dt35.h ..\user\STP_23L.h ..\user\w25q128.h

@@ -32,6 +32,8 @@ r2/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_i2c_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr_ex.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi.h \
+  ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h \
   ..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h \
@@ -44,8 +46,9 @@ r2/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM4F\portmacro.h \
   ..\Middlewares\Third_Party\FreeRTOS\Source\include\mpu_wrappers.h \
   ..\Drivers\CMSIS\RTOS2\Include\cmsis_os2.h ..\Core\Inc\dma.h \
-  ..\Core\Inc\fdcan.h ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
-  ..\user\mymain.h D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h \
-  ..\user\bsp_can.h ..\user\helm_chassis.h ..\user\pid.h \
-  ..\user\DJI_transform.h ..\user\vesc.h ..\user\Interpolation.h \
-  ..\user\WpLib.h ..\user\imu_100A.h ..\user\dt35.h
+  ..\Core\Inc\fdcan.h ..\Core\Inc\spi.h ..\Core\Inc\usart.h \
+  ..\Core\Inc\gpio.h ..\user\mymain.h \
+  D:\keil5\core\ARM\ARMCLANG\Bin\..\include\stdbool.h ..\user\bsp_can.h \
+  ..\user\helm_chassis.h ..\user\pid.h ..\user\DJI_transform.h \
+  ..\user\vesc.h ..\user\Interpolation.h ..\user\WpLib.h \
+  ..\user\imu_100A.h ..\user\dt35.h ..\user\STP_23L.h ..\user\w25q128.h

@@ -16,8 +16,7 @@ typedef struct
     bool state;
 }Interpolation_t;
 
-void Interpolation_Init(Interpolation_t *motor, float start_pos,
-                        float target_pos, float alltime);
+void Interpolation_Init(Interpolation_t *motor);
 
 //enable: 0关闭插值，1开启插值
 //run_time_ms: 插值运行时间，单位毫秒

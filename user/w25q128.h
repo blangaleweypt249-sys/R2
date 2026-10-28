@@ -4,6 +4,12 @@
 
 #include "main.h"
 
+// 地址位段	   对应十六进制	     含义	       范围
+// bit23 ~ bit16	AA	       块号（Block）  0x00 ~ 0xFF（256 块）
+// bit15 ~ bit12  BB的高半字节	块内扇区号	  0x0 ~ 0xF（16 扇区）
+// bit11 ~ bit8	  BB的低半字节	扇区内页号	  0x0 ~ 0xF（16 页）
+// bit7 ~ bit0	    CC	       页内字节偏移	  0x00 ~ 0xFF（256 字节）
+
 #define W25Q128_CAPACITY       0x01000000UL
 #define W25Q128_SECTOR_SIZE    4096U
 #define W25Q128_PAGE_SIZE      256U

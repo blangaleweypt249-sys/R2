@@ -30,8 +30,6 @@ typedef struct
   FDCAN_HandleTypeDef *hfdcan;
   uint8_t motor_id;
   VESC_FeedBack feedback;
-  Interpolation_t position_interpolation;
-  uint8_t position_reference_initialized;
   int num[3];
 }VESC;
 
@@ -48,7 +46,6 @@ void vesc_set_current_rel_off_delay(VESC *vesc, float current_rel, float off_del
 void vesc_set_current_brake(VESC *vesc, float current);
 void vesc_set_current_brake_rel(VESC *vesc, float current_rel);
 void vesc_set_rpm(VESC *vesc, float rpm);
-/* run_time_ms 单位为毫秒；插值开启时需在控制循环中周期调用。 */
 void vesc_set_pos(VESC *vesc, float pos, uint8_t interpolation_enable,
                   uint32_t run_time_ms);
 void vesc_set_handbrake(VESC *vesc, float current);

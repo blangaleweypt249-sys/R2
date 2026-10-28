@@ -33,6 +33,10 @@ typedef struct
     int num[3];
 } DJI_Motor;
 
+
+extern DJI_Motor dji_3508[4];
+extern DJI_Motor dji_2006[4];
+
 void DJI_2006_Init(DJI_Motor *motor, FDCAN_HandleTypeDef *hcan, uint8_t motor_id);
 void DJI_2006CAN_Trans_1(FDCAN_HandleTypeDef *hcan);
 void DJI_2006CAN_Trans_2(FDCAN_HandleTypeDef *hcan);

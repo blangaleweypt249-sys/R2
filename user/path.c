@@ -119,6 +119,7 @@ bool QuarterTurn(float turn_speed, float R, float LorF)
 
     if (fabsf(wrap_pi(Imu_angle - start_angle)) >= PI / 2.0f)
     {
+        //完成转向
         for (uint8_t i = 0; i < 4; i++)
         {
             helm_chassis.helm_speed[i] = 0.0f;

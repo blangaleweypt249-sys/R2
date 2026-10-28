@@ -11,7 +11,6 @@
 void Vofa_Init(UART_HandleTypeDef *huart);
 
 /*
- * 直接传电机结构体，不用再往中间结构体里抄一遍：
  *   通道0 = target_speed    目标转速(rpm)
  *   通道1 = speed_rpm       实际转速(rpm)
  *   通道2 = target_position 目标角度(deg)

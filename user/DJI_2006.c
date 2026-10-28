@@ -4,6 +4,8 @@
 #define DJI2006_CURRENT_LIMIT 10000.0f
 #define DJI2006_SPEED_LIMIT 500.0f
 
+DJI_Motor dji_2006[4];
+
 static int16_t current[8];
 
 static int16_t limit_current(float current)
@@ -25,15 +27,8 @@ void DJI_2006_Init(DJI_Motor *Motor, FDCAN_HandleTypeDef *hcan, uint8_t motor_id
     Motor->target_current = 0;
     Motor->first_feedback = 0;
 
-    pid_init(&Motor->speed_pid,
-             0.0f,
-             10.0f, 0.0f, 0.0f,
-             10000.0f, 3000.0f, 0.0f);
-
-    pid_init(&Motor->position_pid,
-             0.0f,
-             5.0f, 0.0f, 0.0f,
-             3000.0f, 0.0f, 0.5f);
+    pid_init(&Motor->speed_pid, 0.0f, 10.0f, 0.0f, 0.0f, 10000.0f, 3000.0f, 0.0f);
+    pid_init(&Motor->position_pid, 0.0f, 5.0f, 0.0f, 0.0f, 3000.0f, 0.0f, 0.5f);
 }
 
 void DJI_2006CAN_Trans_1(FDCAN_HandleTypeDef *hcan)
@@ -70,6 +65,10 @@ void DJI_2006SetCurrent(DJI_Motor *Motor, int16_t target_current)
         Motor->motor_id > 8)
         return;
 
+    if (Motor->online == 0)
+    {
+        target_current = 0;
+    }
     current[Motor->motor_id - 1] = limit_current((float)target_current);
 }
 
@@ -86,9 +85,7 @@ void DJI_2006SetSpeed(DJI_Motor *Motor, float speed_rpm)
         speed_rpm = -DJI2006_SPEED_LIMIT;
     Motor->target_speed = speed_rpm;
 
-    current = calc_pid(&Motor->speed_pid,
-                       (float)Motor->speed_rpm,
-                       Motor->target_speed);
+    current = calc_pid(&Motor->speed_pid, (float)Motor->speed_rpm, Motor->target_speed);
 
     DJI_2006SetCurrent(Motor, (int16_t)current);
 }
@@ -104,14 +101,10 @@ void DJI_2006SetPosition(DJI_Motor *Motor, float position_deg)
     Motor->target_position = position_deg;
 
     /* 位置外环：输出目标转速 */
-    target_speed = calc_pid(&Motor->position_pid,
-                            Motor->angle_deg,
-                            Motor->target_position);
+    target_speed = calc_pid(&Motor->position_pid, Motor->angle_deg, Motor->target_position);
 
     /* 速度内环：输出目标电流 */
-    target_current = calc_pid(&Motor->speed_pid,
-                              (float)Motor->speed_rpm,
-                              target_speed);
+    target_current = calc_pid(&Motor->speed_pid, (float)Motor->speed_rpm, target_speed);
 
     DJI_2006SetCurrent(Motor, (int16_t)target_current);
 }

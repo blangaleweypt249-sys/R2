@@ -71,6 +71,53 @@ HAL_StatusTypeDef CAN_Transmit(FDCAN_HandleTypeDef *hfdcan, uint8_t type, uint32
     return status;
 }
 
+static HAL_StatusTypeDef FDCAN_ConfigAndStart(FDCAN_HandleTypeDef *hfdcan)
+{
+    if (HAL_FDCAN_ConfigGlobalFilter(hfdcan,
+                                     FDCAN_ACCEPT_IN_RX_FIFO0,
+                                     FDCAN_ACCEPT_IN_RX_FIFO0,
+                                     FDCAN_FILTER_REMOTE,
+                                     FDCAN_FILTER_REMOTE) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    if (HAL_FDCAN_ActivateNotification(hfdcan,
+                                        FDCAN_IT_RX_FIFO0_NEW_MESSAGE,
+                                        0U) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    return HAL_FDCAN_Start(hfdcan);
+}
+
+static void RecoverOneFDCAN(FDCAN_HandleTypeDef *hfdcan)
+{
+    HAL_FDCAN_Stop(hfdcan);
+    HAL_FDCAN_DeInit(hfdcan);
+
+    osDelay(5);
+
+    if (HAL_FDCAN_Init(hfdcan) == HAL_OK)
+    {
+        (void)FDCAN_ConfigAndStart(hfdcan);
+    }
+}
+
+void RecoverCANBus(void)
+{
+    FDCAN_HandleTypeDef *cans[] = { &hfdcan1, &hfdcan2, &hfdcan3 };
+    const uint32_t n = sizeof(cans) / sizeof(cans[0]);
+
+    for (uint32_t i = 0; i < n; i++) {
+        //如果bo位为0则正常，不为0则总线出现问题需要重启
+        if ((cans[i]->Instance->PSR & FDCAN_PSR_BO) != 0U) {
+            RecoverOneFDCAN(cans[i]);
+        }
+    }
+}
+
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
     if ((RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) != 0U)
@@ -167,48 +214,3 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 #endif
 
-static HAL_StatusTypeDef FDCAN_ConfigAndStart(FDCAN_HandleTypeDef *hfdcan)
-{
-    if (HAL_FDCAN_ConfigGlobalFilter(hfdcan,
-                                     FDCAN_ACCEPT_IN_RX_FIFO0,
-                                     FDCAN_ACCEPT_IN_RX_FIFO0,
-                                     FDCAN_FILTER_REMOTE,
-                                     FDCAN_FILTER_REMOTE) != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
-
-    if (HAL_FDCAN_ActivateNotification(hfdcan,
-                                        FDCAN_IT_RX_FIFO0_NEW_MESSAGE,
-                                        0U) != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
-
-    return HAL_FDCAN_Start(hfdcan);
-}
-
-static void RecoverOneFDCAN(FDCAN_HandleTypeDef *hfdcan)
-{
-    HAL_FDCAN_Stop(hfdcan);
-    HAL_FDCAN_DeInit(hfdcan);
-
-    osDelay(5);
-
-    if (HAL_FDCAN_Init(hfdcan) == HAL_OK)
-    {
-        (void)FDCAN_ConfigAndStart(hfdcan);
-    }
-}
-
-void RecoverCANBus(void)
-{
-    FDCAN_HandleTypeDef *cans[] = { &hfdcan1, &hfdcan2, &hfdcan3 };
-    const uint32_t n = sizeof(cans) / sizeof(cans[0]);
-
-    for (uint32_t i = 0; i < n; i++) {
-        if ((cans[i]->Instance->PSR & FDCAN_PSR_BO) != 0U) {
-            RecoverOneFDCAN(cans[i]);
-        }
-    }
-}

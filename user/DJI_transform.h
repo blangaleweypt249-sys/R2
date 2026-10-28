@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "vesc.h" 
+#include "vesc.h"
+#include "WpLib.h" 
 
 typedef enum
 {
@@ -31,13 +32,6 @@ typedef struct
   float speed_cosk;
   int num[3];
 }DJI_HlemMotor;
-
-typedef union
-{
-  float value;
-  uint8_t data[4];
-} packet;
-
 
 void Helm2006_Init(DJI_HlemMotor *motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id);
 void Helm2006_speed(DJI_HlemMotor *motor,float speed);

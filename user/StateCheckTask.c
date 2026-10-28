@@ -32,18 +32,20 @@ void StateCheckTask(void *argument)
     {
         RecoverCANBus();
 
-        Device_Offline_State.handle = Check_State(handle_data.num, STATE_TIMEOUT_COUNT);
-        Device_Offline_State.imu = Check_State(imu_num, STATE_TIMEOUT_COUNT);
-        Device_Offline_State.dt35[0] = Check_State(dt35_front.dt35_num, STATE_TIMEOUT_COUNT);
-        Device_Offline_State.dt35[1] = Check_State(dt35_back.dt35_num, STATE_TIMEOUT_COUNT);
-        Device_Offline_State.dt35[2] = Check_State(dt35_left.dt35_num, STATE_TIMEOUT_COUNT);
-        Device_Offline_State.dt35[3] = Check_State(dt35_right.dt35_num, STATE_TIMEOUT_COUNT);
+        Device_Offline_State.handle_state = Check_State(handle_data.num, STATE_TIMEOUT_COUNT);
+        Device_Offline_State.imu_state = Check_State(imu_num, STATE_TIMEOUT_COUNT);
+        Device_Offline_State.dt35_state[0] = Check_State(dt35_front.dt35_num, STATE_TIMEOUT_COUNT);
+        Device_Offline_State.dt35_state[1] = Check_State(dt35_back.dt35_num, STATE_TIMEOUT_COUNT);
+        Device_Offline_State.dt35_state[2] = Check_State(dt35_left.dt35_num, STATE_TIMEOUT_COUNT);
+        Device_Offline_State.dt35_state[3] = Check_State(dt35_right.dt35_num, STATE_TIMEOUT_COUNT);
         for (uint8_t i = 0; i < 4; i++)
         {
-            Device_Offline_State.dji_motor[i] = Check_State(dji_motor[i].num, STATE_TIMEOUT_COUNT);
-            Device_Offline_State.vesc_motor[i] = Check_State(vesc_motor[i].num, STATE_TIMEOUT_COUNT);
+            //0为离线，1为在线
+            dji_3508[i].online = !Check_State(dji_3508[i].num, STATE_TIMEOUT_COUNT);
+            dji_2006[i].online = !Check_State(dji_2006[i].num, STATE_TIMEOUT_COUNT);
+            Device_Offline_State.vesc_motor_state[i] = Check_State(vesc_motor[i].num, STATE_TIMEOUT_COUNT);
         }
 
-        osDelay(10);
+        osDelay(5);
     }
 }

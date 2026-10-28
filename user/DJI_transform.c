@@ -1,7 +1,7 @@
 #include "DJI_transform.h"
 #include <string.h>
 
-packet packet_data;
+float_u8 packet_data;
 
 static uint32_t command_id(const DJI_HlemMotor *motor, uint8_t command)
 {
@@ -22,10 +22,10 @@ void Helm2006_speed(DJI_HlemMotor *motor, float speed)
     uint8_t data[4];
     motor->mode = Helm_SPEED;
     motor->target_speed = speed;
-    packet_data.value = motor->target_speed;
+    packet_data.f = motor->target_speed;
     for (uint8_t i = 0; i < 4; i++)
     {
-        data[i] = packet_data.data[i];
+        data[i] = packet_data.u8[i];
     }
     CAN_Transmit(motor->hfdcan, 0, command_id(motor, Helm_SPEED), data, 4);
 }
@@ -35,10 +35,10 @@ void Helm2006_position(DJI_HlemMotor *motor, float position)
     uint8_t data[4];
     motor->mode = Helm_POSITION;
     motor->target_position = position;
-    packet_data.value = motor->target_position;
+    packet_data.f = motor->target_position;
     for (uint8_t i = 0; i < 4; i++)
     {
-        data[i] = packet_data.data[i];
+        data[i] = packet_data.u8[i];
     }
     CAN_Transmit(motor->hfdcan, 0, command_id(motor, Helm_POSITION), data, 4);
 }

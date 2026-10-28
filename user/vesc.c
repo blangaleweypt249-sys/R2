@@ -1,7 +1,7 @@
 #include "vesc.h"
 #include <string.h>
 
-#define MOTOR_POLE_PAIRS 14.0f  //rpm=erpm/pole pairs
+#define MOTOR_POLE_PAIRS 14.0f  // rpm=erpm/pole pairs
 #define MOTOR_MAX_CURRENT 60.0f // 最大电流限制为60A
 #define MOTOR_MAX_BRAKE_CURRENT 60.0f
 #define MOTOR_MAX_RPM 10000.0f
@@ -22,15 +22,13 @@ typedef enum
 
 void Vesc_Init(VESC *Motor, FDCAN_HandleTypeDef *hfdcan, uint8_t motor_id)
 {
-	if (Motor == NULL)
-	{
-		return;
-	}
-	memset(Motor, 0, sizeof(*Motor));
-	Motor->hfdcan = hfdcan;
-	Motor->motor_id = motor_id;
-	Interpolation_Init(&Motor->position_interpolation);
-	Motor->position_interpolation.last_update_ms = HAL_GetTick();
+    if (Motor == NULL)
+    {
+        return;
+    }
+    memset(Motor, 0, sizeof(*Motor));
+    Motor->hfdcan = hfdcan;
+    Motor->motor_id = motor_id;
 }
 
 // 大端序
@@ -107,7 +105,7 @@ void vesc_set_current_brake(VESC *vesc, float current)
     CAN_Transmit(vesc->hfdcan, 1, vesc->motor_id | (CAN_PACKET_SET_CURRENT_BRAKE << 8), buffer, 4);
 }
 
-void vesc_set_rpm(VESC *vesc, float rpm)//erpm
+void vesc_set_rpm(VESC *vesc, float rpm) // erpm
 {
     if (rpm > MOTOR_MAX_RPM)
         rpm = MOTOR_MAX_RPM;
@@ -119,26 +117,14 @@ void vesc_set_rpm(VESC *vesc, float rpm)//erpm
     CAN_Transmit(vesc->hfdcan, 1, vesc->motor_id | (CAN_PACKET_SET_RPM << 8), buffer, 4);
 }
 
+// vesc不进行五次插值处理
 void vesc_set_pos(VESC *vesc, float pos, uint8_t interpolation_enable,
                   uint32_t run_time_ms)
 {
-    //尚无反馈或直接位置指令作为参考时，不允许从默认的 0 度开始插值
-    if ((interpolation_enable != 0U) &&
-        (vesc->position_reference_initialized == 0U))
-        return;
-
     if (pos > 360.0f)
         pos = 360.0f;
     if (pos < 0.0f)
         pos = 0.0f;
-
-    pos = Interpolation_PositionCommand(
-        &vesc->position_interpolation,
-        vesc->position_interpolation.actual_pos,
-        pos,
-        interpolation_enable,
-        run_time_ms);
-    vesc->position_reference_initialized = 1U;
 
     int32_t index = 0;
     uint8_t buffer[4];
@@ -207,16 +193,16 @@ void vesc_set_handbrake_rel(VESC *vesc, float current_rel)
     CAN_Transmit(vesc->hfdcan, 1, vesc->motor_id | (CAN_PACKET_SET_CURRENT_HANDBRAKE_REL << 8), buffer, 4);
 }
 
-void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data)
+void VESC_Analysisdata(VESC *vesc, FDCAN_RxHeaderTypeDef *rx_header, uint8_t *data)
 {
-    if ((rx_header == NULL) || (vesc == NULL) || (data == NULL) ||(rx_header->DataLength != FDCAN_DLC_BYTES_8))
+    if ((rx_header == NULL) || (vesc == NULL) || (data == NULL) || (rx_header->DataLength != FDCAN_DLC_BYTES_8))
     {
         return;
     }
 
     if ((rx_header->Identifier & 0xFFU) == vesc->motor_id)
     {
-        switch ((rx_header->Identifier >> 8)&0xFF)
+        switch ((rx_header->Identifier >> 8) & 0xFF)
         {
         case 9: // CAN_PACKET_STATUS
             vesc->feedback.erpm = (int32_t)(((uint32_t)data[0] << 24) |
@@ -227,7 +213,7 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
             vesc->feedback.duty_cycle = (int16_t)(((uint16_t)data[6] << 8) | data[7]);
             vesc->feedback.current = vesc->feedback.o_current / 10.0f;
             vesc->feedback.duty = vesc->feedback.duty_cycle / 1000.0f;
-		    vesc->feedback.rpm = (float)vesc->feedback.erpm/MOTOR_POLE_PAIRS;   //换算成机械rpm
+            vesc->feedback.rpm = (float)vesc->feedback.erpm / MOTOR_POLE_PAIRS; // 换算成机械rpm
             vesc->feedback.actual_speed = vesc->feedback.rpm;
             if (vesc->num[0] >= 1000)
                 vesc->num[0] = 0;
@@ -244,14 +230,6 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
             vesc->feedback.temp_motor = vesc->feedback.o_temp_motor / 10.0f;
             vesc->feedback.current_in = vesc->feedback.o_current_in / 10.0f;
             vesc->feedback.actual_postion = vesc->feedback.pid_pos / 50.0f;
-            if (vesc->position_reference_initialized == 0U)
-            {
-                Interpolation_Init(&vesc->position_interpolation);
-                vesc->position_interpolation.actual_pos =
-                    vesc->feedback.actual_postion;
-                vesc->position_interpolation.last_update_ms = HAL_GetTick();
-                vesc->position_reference_initialized = 1U;
-            }
             if (vesc->num[0] >= 1000)
                 vesc->num[0] = 0;
             else
@@ -260,4 +238,3 @@ void VESC_Analysisdata(VESC *vesc,FDCAN_RxHeaderTypeDef *rx_header, uint8_t *dat
         }
     }
 }
-
